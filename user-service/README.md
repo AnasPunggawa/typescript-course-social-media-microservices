@@ -1,0 +1,21 @@
+# .env FILE
+
+```
+
+# NODE
+NODE_ENV=
+
+# SERVER
+HOST=
+PORT=
+
+# DATABASE
+MONGO_URI=
+
+# JWT
+JWT_ACCESS_SECRET=
+JWT_REFRESH_SECRET=
+
+```
+
+---
