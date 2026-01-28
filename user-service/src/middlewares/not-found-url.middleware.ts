@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { NotFoundException } from '../exceptions';
+import { NotFoundException } from '../common/exceptions';
 
 export function notFoundURLMiddleware(
   req: Request,

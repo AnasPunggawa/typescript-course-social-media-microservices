@@ -5,6 +5,8 @@ export const userRouter = Router({
   mergeParams: true,
 });
 
-userRouter.post('/', UserController.post);
+userRouter.post('/register', UserController.postRegister);
+
+userRouter.post('/login', UserController.postLogin);
 
 userRouter.get('/', UserController.getUsers);

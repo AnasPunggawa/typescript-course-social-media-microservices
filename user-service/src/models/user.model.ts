@@ -42,6 +42,6 @@ const UserSchema = new Schema<UserStored>(
   },
 );
 
-UserSchema.index({ username: 'text' });
+UserSchema.index({ username: 'text', email: 'text' });
 
 export const User = model<UserStored>('User', UserSchema);

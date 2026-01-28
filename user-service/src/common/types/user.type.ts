@@ -2,11 +2,15 @@ import { Types } from 'mongoose';
 import z from 'zod';
 import type { UserSchema } from '../validations';
 
-export type UserCreateRequest = z.infer<typeof UserSchema.create>;
+export type UserRegisterRequest = z.infer<typeof UserSchema.register>;
 
-export type UserCreate = UserCreateRequest;
+export type UserRegister = UserRegisterRequest;
 
-export type UserStored = UserCreate & {
+export type UserLoginRequest = z.infer<typeof UserSchema.login>;
+
+export type UserLogin = UserLoginRequest;
+
+export type UserStored = UserRegister & {
   _id: Types.ObjectId;
   __v: number;
   createdAt: Date;

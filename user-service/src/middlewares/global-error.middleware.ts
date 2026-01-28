@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
+import { ClientException } from '../common/exceptions';
 import { MongooseTypeError } from '../common/utils/mongo-error.util';
-import { ClientException } from '../exceptions';
 import { logError } from '../libs/logger';
 import { responseFail } from '../libs/responses';
 
