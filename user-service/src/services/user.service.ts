@@ -1,7 +1,9 @@
+import { Types } from 'mongoose';
 import { REFRESH_TOKEN_TTL_MS } from '../common/constants';
 import { UnauthenticatedException } from '../common/exceptions';
 import type {
   UserLoginRequest,
+  UserLoginResponse,
   UserPublic,
   UserRegisterRequest,
   UserStored,
@@ -28,10 +30,9 @@ export class UserService {
     return UserService.map(user);
   }
 
-  public static async login(loginRequest: UserLoginRequest): Promise<{
-    accessToken: string;
-    refreshToken: string;
-  }> {
+  public static async login(
+    loginRequest: UserLoginRequest,
+  ): Promise<UserLoginResponse> {
     const userLogin = UserSchema.login.parse(loginRequest);
 
     const user = await UserRepository.selectUserByUsername(userLogin.username);
@@ -64,13 +65,34 @@ export class UserService {
       expiresAt,
     });
 
-    console.log(JWTManager.verifyAccessToken(accessToken));
-    console.log('refresh', JWTManager.verifyRefreshToken(refreshToken));
-
     return {
       accessToken,
       refreshToken,
     };
+  }
+
+  public static async reissueAccessToken(
+    refreshToken: string | undefined,
+  ): Promise<string> {
+    if (!refreshToken) {
+      throw new UnauthenticatedException('Refresh token is required');
+    }
+
+    const verifiedToken = JWTManager.verifyRefreshToken(refreshToken);
+
+    const refreshTokenData =
+      await RefreshTokenRepository.selectTokenByTokenAndUserId({
+        token: refreshToken,
+        user: new Types.ObjectId(verifiedToken.sub),
+      });
+
+    if (!refreshTokenData) {
+      throw new UnauthenticatedException('Refresh token revoked');
+    }
+
+    return JWTManager.signAccessToken({
+      sub: refreshTokenData.user.toString(),
+    });
   }
 
   public static async getUsers(): Promise<UserPublic[]> {

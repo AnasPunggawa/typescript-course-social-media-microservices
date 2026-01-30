@@ -13,8 +13,7 @@ import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET } from '../../configs';
 type TokenType = 'ACCESS' | 'REFRESH';
 
 type TokenConfig = {
-  secret: string | undefined;
-  secretName: string;
+  secret: string;
   defaultExpiresIn: number;
 };
 
@@ -22,12 +21,10 @@ export class JWTManager {
   private static readonly TOKEN_CONFIG: Record<TokenType, TokenConfig> = {
     ACCESS: {
       secret: JWT_ACCESS_SECRET,
-      secretName: 'JWT_ACCESS_SECRET',
       defaultExpiresIn: ACCESS_TOKEN_TTL_MS,
     },
     REFRESH: {
       secret: JWT_REFRESH_SECRET,
-      secretName: 'JWT_REFRESH_SECRET',
       defaultExpiresIn: REFRESH_TOKEN_TTL_MS,
     },
   };
@@ -59,10 +56,7 @@ export class JWTManager {
     payload: TokenPayloadSign,
     expiresIn?: number,
   ): string {
-    const { secret, defaultExpiresIn, secretName } =
-      JWTManager.TOKEN_CONFIG[type];
-
-    JWTManager.assertSecret(secret, secretName);
+    const { secret, defaultExpiresIn } = JWTManager.TOKEN_CONFIG[type];
 
     return sign(payload, secret, {
       expiresIn: Math.floor((expiresIn ?? defaultExpiresIn) / 1000),
@@ -70,19 +64,8 @@ export class JWTManager {
   }
 
   private static verifyToken(type: TokenType, token: string): JwtPayload {
-    const { secret, secretName } = JWTManager.TOKEN_CONFIG[type];
-
-    JWTManager.assertSecret(secret, secretName);
+    const { secret } = JWTManager.TOKEN_CONFIG[type];
 
     return verify(token, secret) as JwtPayload;
-  }
-
-  private static assertSecret(
-    secret: unknown,
-    secretName: string,
-  ): asserts secret is string {
-    if (!secret) {
-      throw new Error(`${secretName} is undefined, please check the .env file`);
-    }
   }
 }

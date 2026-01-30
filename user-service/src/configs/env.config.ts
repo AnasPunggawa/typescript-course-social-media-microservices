@@ -1,15 +1,15 @@
-import 'dotenv/config';
-import { env } from 'node:process';
+import { Env } from '../common/utils/env-util';
 
-export const NODE_ENV = env['NODE_ENV'] ?? 'development';
+export const NODE_ENV = Env.optionalString('NODE_ENV', 'development');
 
-export const HOST = env['HOST'] ?? 'localhost';
+export const HOST = Env.optionalString('HOST', 'localhost');
 
-const PORT_RAW = Number(env['PORT']);
-export const PORT = Number.isInteger(PORT_RAW) ? PORT_RAW : 3001;
+export const PORT = Env.optionalNumber('PORT', 3001);
 
-export const MONGO_URI = env['MONGO_URI'];
+export const MONGO_URI = Env.required('MONGO_URI');
 
-export const JWT_ACCESS_SECRET = env['JWT_ACCESS_SECRET'];
+export const JWT_ACCESS_SECRET = Env.required('JWT_ACCESS_SECRET');
 
-export const JWT_REFRESH_SECRET = env['JWT_REFRESH_SECRET'];
+export const JWT_REFRESH_SECRET = Env.required('JWT_ACCESS_SECRET');
+
+export const COOKIE_SECRET = Env.required('COOKIE_SECRET');

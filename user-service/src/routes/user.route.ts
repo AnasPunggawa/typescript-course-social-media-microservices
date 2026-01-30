@@ -9,4 +9,6 @@ userRouter.post('/register', UserController.postRegister);
 
 userRouter.post('/login', UserController.postLogin);
 
+userRouter.get('/refresh', UserController.getRefreshAccessToken);
+
 userRouter.get('/', UserController.getUsers);

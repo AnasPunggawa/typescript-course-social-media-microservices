@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
+import { JsonWebTokenError } from 'jsonwebtoken';
 import { ZodError } from 'zod';
 import { ClientException } from '../common/exceptions';
 import { MongooseTypeError } from '../common/utils/mongo-error.util';
@@ -77,6 +78,18 @@ export function errorGlobalMiddleware(
     });
 
     logError('Global Error Middleware', err, 'MIDDLEWARE-MONGO');
+
+    return;
+  }
+
+  if (err instanceof JsonWebTokenError) {
+    responseFail({
+      res,
+      statusCode: 401,
+      message: err.message,
+    });
+
+    logError('Global Error Middleware', err, 'MIDDLEWARE-JWT_ERROR');
 
     return;
   }

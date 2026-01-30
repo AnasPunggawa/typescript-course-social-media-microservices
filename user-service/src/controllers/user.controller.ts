@@ -40,8 +40,9 @@ export class UserController {
         httpOnly: true,
         secure: NODE_ENV === 'production' ? true : false,
         sameSite: 'strict',
-        path: '/auth/refresh',
+        path: '/users/refresh',
         maxAge: REFRESH_TOKEN_TTL_MS,
+        signed: true,
       });
       responseSuccess({
         res,
@@ -49,6 +50,29 @@ export class UserController {
         statusCode: 200,
         data: {
           accessToken: token.accessToken,
+        },
+      });
+    } catch (error: unknown) {
+      next(error);
+    }
+  }
+
+  public static async getRefreshAccessToken(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const accessToken = await UserService.reissueAccessToken(
+        req.signedCookies['refreshToken'],
+      );
+
+      responseSuccess({
+        res,
+        message: 'Access token rotated',
+        statusCode: 200,
+        data: {
+          accessToken,
         },
       });
     } catch (error: unknown) {

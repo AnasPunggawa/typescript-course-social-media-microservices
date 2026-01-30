@@ -10,6 +10,11 @@ export type UserLoginRequest = z.infer<typeof UserSchema.login>;
 
 export type UserLogin = UserLoginRequest;
 
+export type UserLoginResponse = {
+  accessToken: string;
+  refreshToken: string;
+};
+
 export type UserStored = UserRegister & {
   _id: Types.ObjectId;
   __v: number;

@@ -1,6 +1,8 @@
 import type {
+  RefreshTokenPublic,
   RefreshTokenStore,
   RefreshTokenStored,
+  TokenAndUserId,
 } from '../common/types/refresh-token.type';
 import { RefreshToken } from '../models';
 
@@ -11,16 +13,15 @@ export class RefreshTokenRepository {
     return RefreshToken.create(data);
   }
 
-  public static selectToken(
-    token: string,
-  ): Promise<Omit<RefreshTokenStored, '__v'> | null> {
-    return RefreshToken.findOne(
-      {
-        token,
-      },
-      {
-        __v: 0,
-      },
-    ).lean();
+  public static selectTokenByTokenAndUserId({
+    token,
+    user,
+  }: TokenAndUserId): Promise<RefreshTokenPublic | null> {
+    return RefreshToken.findOne({
+      token,
+      user,
+    })
+      .select({ __v: 0 })
+      .lean();
   }
 }
