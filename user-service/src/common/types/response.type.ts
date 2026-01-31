@@ -28,3 +28,8 @@ export type ResponseFailParams<T> = {
   statusCode: number;
   errors?: T;
 };
+
+export type ResponseSignRefreshTokenCookie = {
+  res: Response;
+  refreshToken: string;
+};

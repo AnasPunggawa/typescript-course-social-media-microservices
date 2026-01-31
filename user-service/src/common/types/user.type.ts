@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 import z from 'zod';
 import type { UserSchema } from '../validations';
+import type { Tokens } from './refresh-token.type';
 
 export type UserRegisterRequest = z.infer<typeof UserSchema.register>;
 
@@ -10,10 +11,7 @@ export type UserLoginRequest = z.infer<typeof UserSchema.login>;
 
 export type UserLogin = UserLoginRequest;
 
-export type UserLoginResponse = {
-  accessToken: string;
-  refreshToken: string;
-};
+export type UserLoginResponse = Tokens;
 
 export type UserStored = UserRegister & {
   _id: Types.ObjectId;

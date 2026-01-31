@@ -26,3 +26,8 @@ export type RefreshTokenPayloadSign = TokenPayloadSign;
 export type TokenAndUserId = Pick<RefreshTokenStored, 'token' | 'user'>;
 
 export type RefreshTokenPublic = Omit<RefreshTokenStored, '__v'>;
+
+export type Tokens = {
+  accessToken: string;
+  refreshToken: string;
+};

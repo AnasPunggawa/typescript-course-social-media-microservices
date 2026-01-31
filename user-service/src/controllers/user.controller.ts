@@ -1,11 +1,10 @@
 import type { NextFunction, Request, Response } from 'express';
-import { REFRESH_TOKEN_TTL_MS } from '../common/constants';
 import type {
   UserLoginRequest,
   UserRegisterRequest,
 } from '../common/types/user.type';
-import { NODE_ENV } from '../configs/env.config';
 import { responseSuccess } from '../libs/responses';
+import { ResponseRefreshTokenCookie } from '../libs/responses/cookie-refresh-token.response';
 import { UserService } from '../services/user.service';
 
 export class UserController {
@@ -15,13 +14,18 @@ export class UserController {
     next: NextFunction,
   ) {
     try {
-      const user = await UserService.register(req.body);
+      const { user, tokens } = await UserService.register(req.body);
+
+      ResponseRefreshTokenCookie.set({
+        res,
+        refreshToken: tokens.refreshToken,
+      });
 
       responseSuccess({
         res,
         message: 'User Registered',
         statusCode: 201,
-        data: { user },
+        data: { user, accessToken: tokens.accessToken },
       });
     } catch (error: unknown) {
       next(error);
@@ -34,22 +38,19 @@ export class UserController {
     next: NextFunction,
   ) {
     try {
-      const token = await UserService.login(req.body);
+      const tokens = await UserService.login(req.body);
 
-      res.cookie('refreshToken', token.refreshToken, {
-        httpOnly: true,
-        secure: NODE_ENV === 'production' ? true : false,
-        sameSite: 'strict',
-        path: '/users',
-        maxAge: REFRESH_TOKEN_TTL_MS,
-        signed: true,
+      ResponseRefreshTokenCookie.set({
+        res,
+        refreshToken: tokens.refreshToken,
       });
+
       responseSuccess({
         res,
         message: 'User Logged',
         statusCode: 200,
         data: {
-          accessToken: token.accessToken,
+          accessToken: tokens.accessToken,
         },
       });
     } catch (error: unknown) {
@@ -87,6 +88,8 @@ export class UserController {
   ) {
     try {
       await UserService.logout(req.signedCookies['refreshToken']);
+
+      ResponseRefreshTokenCookie.clear(res);
 
       responseSuccess({
         res,

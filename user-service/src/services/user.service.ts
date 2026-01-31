@@ -4,6 +4,7 @@ import {
   NotFoundException,
   UnauthenticatedException,
 } from '../common/exceptions';
+import { Tokens } from '../common/types/refresh-token.type';
 import type {
   UserLoginRequest,
   UserLoginResponse,
@@ -19,7 +20,7 @@ import { RefreshTokenRepository, UserRepository } from '../repositories';
 export class UserService {
   public static async register(
     registerRequest: UserRegisterRequest,
-  ): Promise<UserPublic> {
+  ): Promise<{ user: UserPublic; tokens: UserLoginResponse }> {
     const userRegister = UserSchema.register.parse(registerRequest);
 
     const hashedPassword = await Argon2PasswordManager.hash(
@@ -30,7 +31,23 @@ export class UserService {
 
     const user = await UserRepository.register(userRegister);
 
-    return UserService.map(user);
+    const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
+
+    const { accessToken, refreshToken } = UserService.signTokens(user);
+
+    await RefreshTokenRepository.store({
+      token: refreshToken,
+      user: user._id,
+      expiresAt,
+    });
+
+    return {
+      user: UserService.map(user),
+      tokens: {
+        accessToken,
+        refreshToken,
+      },
+    };
   }
 
   public static async login(
@@ -55,12 +72,7 @@ export class UserService {
 
     const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
 
-    const accessToken = JWTManager.signAccessToken({
-      sub: user._id.toString(),
-    });
-    const refreshToken = JWTManager.signRefreshToken({
-      sub: user._id.toString(),
-    });
+    const { accessToken, refreshToken } = UserService.signTokens(user);
 
     await RefreshTokenRepository.store({
       token: refreshToken,
@@ -135,5 +147,20 @@ export class UserService {
 
   private static toMongooseObjectId(id: string | undefined): Types.ObjectId {
     return new Types.ObjectId(id);
+  }
+
+  private static signTokens(user: UserStored): Tokens {
+    const accessToken = JWTManager.signAccessToken({
+      sub: user._id.toString(),
+    });
+
+    const refreshToken = JWTManager.signRefreshToken({
+      sub: user._id.toString(),
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }

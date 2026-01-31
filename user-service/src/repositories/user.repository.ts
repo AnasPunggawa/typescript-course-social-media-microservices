@@ -8,16 +8,10 @@ export class UserRepository {
 
   public static async selectUserByUsername(
     username: string,
-  ): Promise<Pick<UserStored, '_id' | 'username' | 'password'> | null> {
+  ): Promise<UserStored | null> {
     return User.findOne({
       username,
-    })
-      .select({
-        __id: 1,
-        username: 1,
-        password: 1,
-      })
-      .lean();
+    }).lean();
   }
 
   public static async selectUsers(): Promise<UserStored[]> {
