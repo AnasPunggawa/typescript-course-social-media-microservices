@@ -1,21 +1,20 @@
 import { Types } from 'mongoose';
-import { REFRESH_TOKEN_TTL_MS } from '../common/constants';
-import {
-  NotFoundException,
-  UnauthenticatedException,
-} from '../common/exceptions';
-import { Tokens } from '../common/types/refresh-token.type';
+
+import { REFRESH_TOKEN_TTL_MS } from '@common/constants/token.constant';
+import { NotFoundException } from '@common/exceptions/not-found.exception';
+import { UnauthenticatedException } from '@common/exceptions/unauthenticated.exception';
+import type { Tokens } from '@common/types/refresh-token.type';
 import type {
   UserLoginRequest,
   UserLoginResponse,
   UserPublic,
   UserRegisterRequest,
   UserStored,
-} from '../common/types/user.type';
-import { UserSchema } from '../common/validations';
-import { Argon2PasswordManager } from '../infrastructures/security';
-import { JWTManager } from '../infrastructures/security/token-manager';
-import { RefreshTokenRepository, UserRepository } from '../repositories';
+} from '@common/types/user.type';
+import { UserSchema } from '@common/validations/user.schema';
+import { Argon2PasswordManager, JWTManager } from '@infrastructures/security';
+import { RefreshTokenRepository } from '@repositories/refresh-token.repository';
+import { UserRepository } from '@repositories/user.repository';
 
 export class UserService {
   public static async register(

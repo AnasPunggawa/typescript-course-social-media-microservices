@@ -1,14 +1,15 @@
 import { JwtPayload, sign, verify } from 'jsonwebtoken';
+
 import {
   ACCESS_TOKEN_TTL_MS,
   REFRESH_TOKEN_TTL_MS,
-} from '../../common/constants';
+} from '@common/constants/token.constant';
 import type {
   AccessTokenPayloadSign,
   RefreshTokenPayloadSign,
   TokenPayloadSign,
-} from '../../common/types/refresh-token.type';
-import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET } from '../../configs';
+} from '@common/types/refresh-token.type';
+import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET } from '@configs/env.config';
 
 type TokenType = 'ACCESS' | 'REFRESH';
 

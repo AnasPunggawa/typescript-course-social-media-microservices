@@ -1,9 +1,11 @@
 import cookieParser from 'cookie-parser';
-import express, { json, type Express } from 'express';
+import express, { json, urlencoded, type Express } from 'express';
 import helmet from 'helmet';
-import { COOKIE_SECRET } from './configs';
-import { errorGlobalMiddleware, notFoundURLMiddleware } from './middlewares';
-import { userRouter } from './routes';
+
+import { COOKIE_SECRET } from '@configs/env.config';
+import { errorGlobalMiddleware } from '@middlewares/global-error.middleware';
+import { notFoundURLMiddleware } from '@middlewares/not-found-url.middleware';
+import { userRouter } from '@routes/user.route';
 
 export function createApp(): Express {
   const app = express();
@@ -11,7 +13,7 @@ export function createApp(): Express {
   app.use(cookieParser(COOKIE_SECRET));
 
   app.use(helmet());
-  app.use(express.urlencoded({ extended: true }));
+  app.use(urlencoded({ extended: true }));
   app.use(json());
 
   app.use('/users', userRouter);

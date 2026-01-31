@@ -15,6 +15,21 @@
     "types": ["node"],
     // and npm install -D @types/node
 
+    // Paths
+    "baseUrl": "./src",
+    "paths": {
+      "@common/*": ["common/*"],
+      "@configs/*": ["configs/*"],
+      "@controllers/*": ["controllers/*"],
+      "@infrastructures/*": ["infrastructures/*"],
+      "@libs/*": ["libs/*"],
+      "@middlewares/*": ["middlewares/*"],
+      "@models/*": ["models/*"],
+      "@repositories/*": ["repositories/*"],
+      "@routes/*": ["routes/*"],
+      "@services/*": ["services/*"]
+    },
+
     // Other Outputs
     "sourceMap": true,
     "declaration": true,

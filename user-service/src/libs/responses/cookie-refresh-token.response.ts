@@ -1,7 +1,8 @@
 import type { CookieOptions, Response } from 'express';
-import { REFRESH_TOKEN_TTL_MS } from '../../common/constants';
-import type { ResponseSignRefreshTokenCookie } from '../../common/types/response.type';
-import { NODE_ENV } from '../../configs';
+
+import { REFRESH_TOKEN_TTL_MS } from '@common/constants/token.constant';
+import type { ResponseSignRefreshTokenCookie } from '@common/types/response.type';
+import { NODE_ENV } from '@configs/env.config';
 
 export class ResponseRefreshTokenCookie {
   private static readonly options: CookieOptions = {

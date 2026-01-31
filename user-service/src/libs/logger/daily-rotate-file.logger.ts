@@ -3,7 +3,8 @@ import { format as winstonFormat } from 'winston';
 import DailyRotateFile, {
   DailyRotateFileTransportOptions,
 } from 'winston-daily-rotate-file';
-import { LOGS_DIR } from '../../configs/paths.config';
+
+import { LOGS_DIR } from '@configs/paths.config';
 
 function dailyRotateFileTransportBuilder({
   filename,

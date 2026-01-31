@@ -1,11 +1,12 @@
 import type { NextFunction, Request, Response } from 'express';
+
 import type {
   UserLoginRequest,
   UserRegisterRequest,
-} from '../common/types/user.type';
-import { responseSuccess } from '../libs/responses';
-import { ResponseRefreshTokenCookie } from '../libs/responses/cookie-refresh-token.response';
-import { UserService } from '../services/user.service';
+} from '@common/types/user.type';
+import { ResponseRefreshTokenCookie } from '@libs/responses/cookie-refresh-token.response';
+import { responseSuccess } from '@libs/responses/success.response';
+import { UserService } from '@services/user.service';
 
 export class UserController {
   public static async postRegister(

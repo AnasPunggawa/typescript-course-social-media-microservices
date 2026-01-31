@@ -1,5 +1,6 @@
 import type { Response } from 'express';
-import { ResponseFailParams } from '../../common/types/response.type';
+
+import type { ResponseFailParams } from '@common/types/response.type';
 
 export function responseFail<T>({
   res,

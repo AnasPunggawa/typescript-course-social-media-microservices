@@ -1,5 +1,5 @@
-import type { UserRegister, UserStored } from '../common/types/user.type';
-import { User } from '../models';
+import type { UserRegister, UserStored } from '@common/types/user.type';
+import { User } from '@models/user.model';
 
 export class UserRepository {
   public static async register(data: UserRegister): Promise<UserStored> {

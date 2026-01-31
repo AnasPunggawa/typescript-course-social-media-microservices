@@ -1,4 +1,4 @@
-import { Env } from '../common/utils/env-util';
+import { Env } from '@common/utils/env.util';
 
 export const NODE_ENV = Env.optionalString('NODE_ENV', 'development');
 

@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 import z from 'zod';
-import type { UserSchema } from '../validations';
+
+import { UserSchema } from '@common/validations/user.schema';
 import type { Tokens } from './refresh-token.type';
 
 export type UserRegisterRequest = z.infer<typeof UserSchema.register>;

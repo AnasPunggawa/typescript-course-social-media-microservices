@@ -1,5 +1,6 @@
 import { model, Schema } from 'mongoose';
-import type { RefreshTokenStored } from '../common/types/refresh-token.type';
+
+import type { RefreshTokenStored } from '@common/types/refresh-token.type';
 
 const RefreshTokenSchema = new Schema<RefreshTokenStored>(
   {

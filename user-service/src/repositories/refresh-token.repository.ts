@@ -1,11 +1,12 @@
 import { DeleteResult } from 'mongoose';
+
 import type {
   RefreshTokenPublic,
   RefreshTokenStore,
   RefreshTokenStored,
   TokenAndUserId,
-} from '../common/types/refresh-token.type';
-import { RefreshToken } from '../models';
+} from '@common/types/refresh-token.type';
+import { RefreshToken } from '@models/refresh-token.model';
 
 export class RefreshTokenRepository {
   public static async store(

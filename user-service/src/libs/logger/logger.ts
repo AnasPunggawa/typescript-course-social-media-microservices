@@ -1,5 +1,6 @@
 import { createLogger, format, transports } from 'winston';
-import { NODE_ENV } from '../../configs';
+
+import { NODE_ENV } from '@configs/env.config';
 import {
   appTransport,
   combinedTransport,

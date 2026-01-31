@@ -1,5 +1,6 @@
 import type { Response } from 'express';
-import { ResponseSuccessParams } from '../../common/types/response.type';
+
+import { ResponseSuccessParams } from '@common/types/response.type';
 
 export function responseSuccess<T>({
   res,

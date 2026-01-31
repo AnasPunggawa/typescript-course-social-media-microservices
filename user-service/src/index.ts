@@ -2,11 +2,13 @@ import 'dotenv/config';
 import { Mongoose } from 'mongoose';
 import { Server } from 'node:http';
 import process from 'node:process';
-import { HOST, PORT } from './configs';
-import { setupRuntimeDirectories } from './configs/runtime.config';
-import { connection } from './libs/db';
-import { logError, logInfo } from './libs/logger';
 import { startServer } from './server';
+
+import { HOST, PORT } from '@configs/env.config';
+import { setupRuntimeDirectories } from '@configs/runtime.config';
+import { connection } from '@libs/db/connection.db';
+import { logError } from '@libs/logger/error.logger';
+import { logInfo } from '@libs/logger/info.logger';
 
 let isShuttingDown: boolean = false;
 let server: Server | undefined;

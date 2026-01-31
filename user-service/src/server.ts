@@ -1,6 +1,8 @@
 import { createServer, Server } from 'node:http';
+
+import { logError } from '@libs/logger/error.logger';
+import { logInfo } from '@libs/logger/info.logger';
 import { createApp } from './app';
-import { logError, logInfo } from './libs/logger';
 
 export function startServer(PORT: number, HOST: string): Server {
   const app = createApp();
