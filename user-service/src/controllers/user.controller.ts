@@ -40,7 +40,7 @@ export class UserController {
         httpOnly: true,
         secure: NODE_ENV === 'production' ? true : false,
         sameSite: 'strict',
-        path: '/users/refresh',
+        path: '/users',
         maxAge: REFRESH_TOKEN_TTL_MS,
         signed: true,
       });
@@ -74,6 +74,24 @@ export class UserController {
         data: {
           accessToken,
         },
+      });
+    } catch (error: unknown) {
+      next(error);
+    }
+  }
+
+  public static async deleteLogout(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      await UserService.logout(req.signedCookies['refreshToken']);
+
+      responseSuccess({
+        res,
+        statusCode: 200,
+        message: 'User Logout',
       });
     } catch (error: unknown) {
       next(error);

@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { Mongoose } from 'mongoose';
 import { Server } from 'node:http';
 import process from 'node:process';

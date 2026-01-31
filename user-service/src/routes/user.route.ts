@@ -11,4 +11,6 @@ userRouter.post('/login', UserController.postLogin);
 
 userRouter.get('/refresh', UserController.getRefreshAccessToken);
 
+userRouter.delete('/logout', UserController.deleteLogout);
+
 userRouter.get('/', UserController.getUsers);

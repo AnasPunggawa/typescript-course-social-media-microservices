@@ -1,3 +1,4 @@
+import { DeleteResult } from 'mongoose';
 import type {
   RefreshTokenPublic,
   RefreshTokenStore,
@@ -13,7 +14,7 @@ export class RefreshTokenRepository {
     return RefreshToken.create(data);
   }
 
-  public static selectTokenByTokenAndUserId({
+  public static async selectTokenByTokenAndUserId({
     token,
     user,
   }: TokenAndUserId): Promise<RefreshTokenPublic | null> {
@@ -23,5 +24,15 @@ export class RefreshTokenRepository {
     })
       .select({ __v: 0 })
       .lean();
+  }
+
+  public static async deleteTokenByTokenAndUserId({
+    token,
+    user,
+  }: TokenAndUserId): Promise<DeleteResult> {
+    return RefreshToken.deleteOne({
+      token,
+      user,
+    }).lean();
   }
 }
