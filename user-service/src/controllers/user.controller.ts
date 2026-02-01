@@ -110,6 +110,8 @@ export class UserController {
     try {
       const users = await UserService.getUsers();
 
+      res.set('X-Some-Custom-Header', 'Fetch All Users');
+
       responseSuccess({
         res,
         message: 'Fetch all users',

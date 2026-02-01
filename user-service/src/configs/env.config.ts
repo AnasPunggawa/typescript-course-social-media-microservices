@@ -13,3 +13,5 @@ export const JWT_ACCESS_SECRET = Env.required('JWT_ACCESS_SECRET');
 export const JWT_REFRESH_SECRET = Env.required('JWT_ACCESS_SECRET');
 
 export const COOKIE_SECRET = Env.required('COOKIE_SECRET');
+
+export const ALLOWED_ORIGINS = Env.required('ALLOWED_ORIGINS');
