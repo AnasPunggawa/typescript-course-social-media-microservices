@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import Redis from 'ioredis';
 import { Mongoose } from 'mongoose';
 import { Server } from 'node:http';
 import process from 'node:process';
@@ -13,11 +14,15 @@ import { startServer } from './server';
 let isShuttingDown: boolean = false;
 let server: Server | undefined;
 let mongooseConnection: Mongoose | undefined;
+let redisConnection: Redis | undefined;
 
 async function bootstrap(): Promise<void> {
   await setupRuntimeDirectories();
 
-  mongooseConnection = await connection();
+  const connections = await connection();
+
+  mongooseConnection = connections.mongooseConnection;
+  redisConnection = connections.redisConnection;
 
   server = startServer(PORT, HOST);
 }
@@ -35,7 +40,7 @@ async function shutdown(signal: string): Promise<void> {
 
   logInfo(`Received ${signal}`, 'SERVER');
 
-  if (!server && !mongooseConnection) {
+  if (!server && !mongooseConnection && !redisConnection) {
     process.exitCode = 0;
 
     return;
@@ -58,6 +63,12 @@ async function shutdown(signal: string): Promise<void> {
           resolve();
         });
       });
+    }
+
+    if (redisConnection) {
+      await redisConnection.quit();
+
+      logInfo('Redis closed', 'MONGOOSE');
     }
 
     if (mongooseConnection) {

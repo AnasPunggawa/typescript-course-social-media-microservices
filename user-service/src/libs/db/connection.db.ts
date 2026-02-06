@@ -1,14 +1,13 @@
-import { connect } from 'mongoose';
-
-import { MONGO_URI } from '@configs/env.config';
-import { logInfo } from '@libs/logger/info.logger';
+import { initMongodb } from './mongo.db';
+import { initRedis } from './redis.db';
 
 export async function connection() {
-  logInfo('Connecting to database...', 'MONGOOSE');
+  const redisConnection = await initRedis();
 
-  const mongodb = await connect(MONGO_URI);
+  const mongooseConnection = await initMongodb();
 
-  logInfo('Database connected', 'MONGOOSE');
-
-  return mongodb;
+  return {
+    mongooseConnection,
+    redisConnection,
+  };
 }

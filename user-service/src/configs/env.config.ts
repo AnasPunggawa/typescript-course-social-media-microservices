@@ -15,3 +15,7 @@ export const JWT_REFRESH_SECRET = Env.required('JWT_ACCESS_SECRET');
 export const COOKIE_SECRET = Env.required('COOKIE_SECRET');
 
 export const ALLOWED_ORIGINS = Env.required('ALLOWED_ORIGINS');
+
+export const REDIS_HOST = Env.required('REDIS_HOST');
+
+export const REDIS_PORT = Env.requiredNumber('REDIS_PORT');
