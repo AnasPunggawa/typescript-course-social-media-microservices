@@ -1,10 +1,10 @@
 import 'dotenv/config';
-import Redis from 'ioredis';
-import { Mongoose } from 'mongoose';
-import { Server } from 'node:http';
+import type Redis from 'ioredis';
+import type { Mongoose } from 'mongoose';
+import type { Server } from 'node:http';
 import process from 'node:process';
 
-import { HOST, PORT } from '@configs/env.config';
+import { SERVER_HOST, SERVER_PORT } from '@configs/env.config';
 import { setupRuntimeDirectories } from '@configs/runtime.config';
 import { connection } from '@libs/db/connection.db';
 import { logError } from '@libs/logger/error.logger';
@@ -24,7 +24,7 @@ async function bootstrap(): Promise<void> {
   mongooseConnection = connections.mongooseConnection;
   redisConnection = connections.redisConnection;
 
-  server = startServer(PORT, HOST);
+  server = startServer(SERVER_PORT, SERVER_HOST);
 }
 
 bootstrap().catch((err: unknown) => {
@@ -68,7 +68,7 @@ async function shutdown(signal: string): Promise<void> {
     if (redisConnection) {
       await redisConnection.quit();
 
-      logInfo('Redis closed', 'MONGOOSE');
+      logInfo('Redis closed', 'REDIS');
     }
 
     if (mongooseConnection) {

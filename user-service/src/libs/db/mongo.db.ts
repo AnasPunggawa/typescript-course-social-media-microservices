@@ -14,7 +14,7 @@ export async function initMongodb(): Promise<Mongoose> {
 
     return mongooseConnection;
   } catch (error: unknown) {
-    logError('Redis connection failed', error, 'MONGODB');
+    logError('MongoDB connection failed', error, 'MONGODB');
 
     throw error;
   }

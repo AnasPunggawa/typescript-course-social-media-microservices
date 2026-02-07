@@ -4,7 +4,7 @@ import { getRedis } from '@libs/db/redis.db';
 
 let rateLimiterRedis: RateLimiterRedis | undefined;
 
-export function initUserLimiter() {
+export function initUserLimiter(): void {
   const limiter = new RateLimiterRedis({
     storeClient: getRedis(),
     keyPrefix: 'user_service',
@@ -16,7 +16,7 @@ export function initUserLimiter() {
   rateLimiterRedis = limiter;
 }
 
-export function getUserRateLimiter() {
+export function getUserRateLimiter(): RateLimiterRedis {
   if (!rateLimiterRedis) {
     throw new Error('User rate limiter not initialized');
   }

@@ -8,7 +8,7 @@ import { COOKIE_SECRET } from '@configs/env.config';
 import { apiRateLimit } from '@configs/rate-limit.config';
 import { errorGlobalMiddleware } from '@middlewares/global-error.middleware';
 import { notFoundURLMiddleware } from '@middlewares/not-found-url.middleware';
-import { rateLimiterRedisMiddleware } from '@middlewares/redis-rate-limiter.middleware';
+import { userRateLimiterMiddleware } from '@middlewares/redis-rate-limiter.middleware';
 import { userRouter } from '@routes/user.route';
 
 export function createApp(): Express {
@@ -21,8 +21,7 @@ export function createApp(): Express {
   app.use(urlencoded({ extended: true }));
   app.use(json());
 
-  app.use('/users', rateLimiterRedisMiddleware, userRouter);
-  // app.use('/users', userRouter);
+  app.use('/users', userRateLimiterMiddleware, userRouter);
 
   app.use(notFoundURLMiddleware);
 

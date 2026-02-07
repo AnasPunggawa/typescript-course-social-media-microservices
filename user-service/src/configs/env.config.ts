@@ -2,9 +2,9 @@ import { Env } from '@common/utils/env.util';
 
 export const NODE_ENV = Env.optionalString('NODE_ENV', 'development');
 
-export const HOST = Env.optionalString('HOST', 'localhost');
+export const SERVER_HOST = Env.optionalString('SERVER_HOST', 'localhost');
 
-export const PORT = Env.optionalNumber('PORT', 3001);
+export const SERVER_PORT = Env.optionalNumber('SERVER_PORT', 3001);
 
 export const MONGO_URI = Env.required('MONGO_URI');
 
