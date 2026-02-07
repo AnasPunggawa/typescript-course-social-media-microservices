@@ -1,7 +1,7 @@
 import Redis from 'ioredis';
 
 import { REDIS_HOST, REDIS_PORT } from '@configs/env.config';
-import { initUserLimiter } from '@libs/limiter/user-rate.limiter';
+import { UserLimiter } from '@libs/limiters/user.limiter';
 import { logError } from '@libs/logger/error.logger';
 import { logInfo } from '@libs/logger/info.logger';
 
@@ -60,7 +60,7 @@ export async function initRedis(): Promise<Redis> {
 
   redisClient = await waitForRedisReady(client);
 
-  initUserLimiter();
+  UserLimiter.initLimiters();
 
   client.on('error', (error) => {
     logError('Redis Runtime Error', error, 'RUNTIME_REDIS');

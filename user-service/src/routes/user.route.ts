@@ -1,17 +1,34 @@
 import { Router } from 'express';
 
 import { UserController } from '@controllers/user.controller';
+import { userRateLimiterMiddleware } from '@middlewares/redis-rate-limiter.middleware';
 
 export const userRouter = Router({
   mergeParams: true,
 });
 
-userRouter.post('/register', UserController.postRegister);
+userRouter.get('/', userRateLimiterMiddleware('auth'), UserController.getUsers);
 
-userRouter.post('/login', UserController.postLogin);
+userRouter.post(
+  '/register',
+  userRateLimiterMiddleware('register'),
+  UserController.postRegister,
+);
 
-userRouter.get('/refresh', UserController.getRefreshAccessToken);
+userRouter.post(
+  '/login',
+  userRateLimiterMiddleware('login'),
+  UserController.postLogin,
+);
 
-userRouter.delete('/logout', UserController.deleteLogout);
+userRouter.get(
+  '/refresh',
+  userRateLimiterMiddleware('refresh'),
+  UserController.getRefreshAccessToken,
+);
 
-userRouter.get('/', UserController.getUsers);
+userRouter.delete(
+  '/logout',
+  userRateLimiterMiddleware('logout'),
+  UserController.deleteLogout,
+);
