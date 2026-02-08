@@ -1,5 +1,6 @@
-import { createLogger, format, Logger, transports } from 'winston';
+import { createLogger, format, type Logger, transports } from 'winston';
 
+import type { NodeEnvironment } from '@common/types/env.type';
 import {
   appTransport,
   combinedTransport,
@@ -10,7 +11,7 @@ import { customLoggerFormat } from './format';
 
 let logger: Logger | undefined;
 
-export function initLogger(nodeEnv: string): Logger {
+export function initLogger(NODE_ENV: NodeEnvironment): Logger {
   if (logger) {
     return logger;
   }
@@ -18,7 +19,7 @@ export function initLogger(nodeEnv: string): Logger {
   const { combine, errors, timestamp, ms, metadata, splat } = format;
 
   logger = createLogger({
-    level: nodeEnv === 'production' ? 'info' : 'debug',
+    level: NODE_ENV === 'production' ? 'info' : 'debug',
     defaultMeta: { service: 'API-GATEWAY' },
     format: combine(
       splat(),

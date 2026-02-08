@@ -1,9 +1,10 @@
+import type { NodeEnvironment } from '@common/types/env.type';
 import { logError } from '@libs/logger/error.logger';
 import c from 'cors';
 
-export function cors(nodeEnv: string, allowedOrigins: string[]) {
+export function cors(NODE_ENV: NodeEnvironment, ALLOWED_ORIGINS: string[]) {
   const whiteList = new Set<string>(
-    nodeEnv === 'production' ? allowedOrigins : [],
+    NODE_ENV === 'production' ? ALLOWED_ORIGINS : [],
   );
 
   return c({

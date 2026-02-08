@@ -4,7 +4,7 @@ import { logError } from '@libs/logger/error.logger';
 import { logInfo } from '@libs/logger/info.logger';
 import { createApp } from './app';
 
-export function startServer(port: number, host: string): Server {
+export function startServer(PORT: number, HOST: string): Server {
   const app = createApp();
 
   const server = createServer(app);
@@ -15,8 +15,8 @@ export function startServer(port: number, host: string): Server {
     throw error;
   });
 
-  server.listen(port, host, () => {
-    logInfo(`Server is running on http://${host}:${port}`, 'SERVER');
+  server.listen(PORT, HOST, () => {
+    logInfo(`Server is running on http://${HOST}:${PORT}`, 'SERVER');
   });
 
   return server;
