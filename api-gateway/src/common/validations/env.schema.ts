@@ -1,0 +1,32 @@
+import z from 'zod';
+
+export const envSchema = z.object({
+  NODE_ENV: z
+    .enum(['production', 'development', 'test'])
+    .default('development'),
+
+  SERVER_HOST: z.string().min(1).default('localhost'),
+  SERVER_PORT: z.coerce.number().int().positive().default(3000),
+
+  ALLOWED_ORIGINS: z
+    .string()
+    .min(1)
+    .transform((str) => str.split(',').map((origin) => origin.trim()))
+    .superRefine((origins, ctx) => {
+      origins.forEach((origin) => {
+        const { error } = z.url().safeParse(origin);
+
+        if (error) {
+          ctx.addIssue({
+            code: 'invalid_format',
+            format: 'url',
+            message: `Invalid allowed origins URL: ${origin}`,
+          });
+        }
+      });
+    }),
+
+  USER_SERVICE_URL: z.url(),
+
+  REDIS_URL: z.url(),
+});

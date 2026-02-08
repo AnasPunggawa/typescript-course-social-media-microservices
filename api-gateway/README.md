@@ -1,0 +1,20 @@
+# .env FILE
+
+```
+
+# NODE
+NODE_ENV=
+
+# SERVER
+SERVER_HOST=
+SERVER_PORT=
+
+# USER SERVICES
+USER_SERVICE_URL=
+
+# REDIS
+REDIS_URL=
+
+```
+
+---
