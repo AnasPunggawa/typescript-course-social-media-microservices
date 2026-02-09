@@ -1,10 +1,9 @@
-import { connect, Mongoose } from 'mongoose';
+import { connect, type Mongoose } from 'mongoose';
 
-import { MONGO_URI } from '@configs/env.config';
 import { logError } from '@libs/logger/error.logger';
 import { logInfo } from '@libs/logger/info.logger';
 
-export async function initMongodb(): Promise<Mongoose> {
+export async function initMongodb(MONGO_URI: string): Promise<Mongoose> {
   try {
     logInfo('Connecting to MongoDB...', 'MONGODB');
 

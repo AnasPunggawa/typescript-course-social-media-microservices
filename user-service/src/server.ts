@@ -11,6 +11,8 @@ export function startServer(PORT: number, HOST: string): Server {
 
   server.on('error', (error) => {
     logError('Server Error', error, 'SERVER');
+
+    throw error;
   });
 
   server.listen(PORT, HOST, () => {

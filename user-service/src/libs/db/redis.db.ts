@@ -1,18 +1,10 @@
 import Redis from 'ioredis';
 
-import { REDIS_HOST, REDIS_PORT } from '@configs/env.config';
 import { UserLimiter } from '@libs/limiters/user.limiter';
 import { logError } from '@libs/logger/error.logger';
 import { logInfo } from '@libs/logger/info.logger';
 
 let redisClient: Redis | undefined;
-
-const client = new Redis({
-  host: REDIS_HOST,
-  port: REDIS_PORT,
-  enableReadyCheck: true,
-  maxRetriesPerRequest: null,
-});
 
 function waitForRedisReady(
   redisClient: Redis,
@@ -53,10 +45,20 @@ function waitForRedisReady(
   });
 }
 
-export async function initRedis(): Promise<Redis> {
+export async function initRedis(
+  REDIS_PORT: number,
+  REDIS_HOST: string,
+): Promise<Redis> {
   if (redisClient) {
     return redisClient;
   }
+
+  const client = new Redis({
+    host: REDIS_HOST,
+    port: REDIS_PORT,
+    enableReadyCheck: true,
+    maxRetriesPerRequest: null,
+  });
 
   redisClient = await waitForRedisReady(client);
 

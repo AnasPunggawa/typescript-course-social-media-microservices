@@ -78,7 +78,7 @@ export function errorGlobalMiddleware(
       message: 'INTERNAL SERVER ERROR',
     });
 
-    logError('Global Error Middleware', err, 'MIDDLEWARE-MONGO');
+    logError('Global Error Middleware', err, 'MIDDLEWARE_MONGODB_ERROR');
 
     return;
   }
@@ -90,7 +90,7 @@ export function errorGlobalMiddleware(
       message: err.message,
     });
 
-    logError('Global Error Middleware', err, 'MIDDLEWARE-JWT_ERROR');
+    logError('Global Error Middleware', err, 'MIDDLEWARE_JWT_ERROR');
 
     return;
   }

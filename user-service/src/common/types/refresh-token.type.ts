@@ -31,3 +31,10 @@ export type Tokens = {
   accessToken: string;
   refreshToken: string;
 };
+
+export type TokenType = 'ACCESS' | 'REFRESH';
+
+export type TokenConfig = {
+  secret: string;
+  defaultExpiresIn: number;
+};

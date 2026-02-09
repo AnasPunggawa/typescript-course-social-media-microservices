@@ -5,7 +5,6 @@ import type {
   RateLimitRedisConfig,
 } from '@common/types/rate-limit.type';
 import { getRedis } from '@libs/db/redis.db';
-import { logInfo } from '@libs/logger/info.logger';
 
 export class UserLimiter {
   private static readonly limiters = new Map<Limiter, RateLimiterRedis>();
@@ -44,16 +43,12 @@ export class UserLimiter {
   } as const;
 
   public static initLimiters(): void {
-    logInfo('Initializing Redis Rate Limiters...', 'RATE_LIMITER_REDIS');
-
     (Object.keys(UserLimiter.CONFIGS) as Limiter[]).forEach((key) => {
       UserLimiter.limiters.set(
         key,
         UserLimiter.createLimiter(UserLimiter.CONFIGS[key]),
       );
     });
-
-    logInfo('Redis Rate Limiters Initialized', 'RATE_LIMITER_REDIS');
   }
 
   public static getLimiter(name: Limiter): RateLimiterRedis {

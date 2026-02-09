@@ -1,21 +1,20 @@
-import { Env } from '@common/utils/env.util';
+import { env } from 'node:process';
 
-export const NODE_ENV = Env.optionalString('NODE_ENV', 'development');
+import type { EnvConfig } from '@common/types/env.type';
+import { envSchema } from '@common/validations/env.schema';
 
-export const SERVER_HOST = Env.optionalString('SERVER_HOST', 'localhost');
+let cachedEnv: EnvConfig | undefined;
 
-export const SERVER_PORT = Env.optionalNumber('SERVER_PORT', 3001);
+export function loadEnv(): EnvConfig {
+  if (cachedEnv) {
+    return cachedEnv;
+  }
 
-export const MONGO_URI = Env.required('MONGO_URI');
+  try {
+    cachedEnv = envSchema.parse(env);
 
-export const JWT_ACCESS_SECRET = Env.required('JWT_ACCESS_SECRET');
-
-export const JWT_REFRESH_SECRET = Env.required('JWT_ACCESS_SECRET');
-
-export const COOKIE_SECRET = Env.required('COOKIE_SECRET');
-
-export const ALLOWED_ORIGINS = Env.required('ALLOWED_ORIGINS');
-
-export const REDIS_HOST = Env.required('REDIS_HOST');
-
-export const REDIS_PORT = Env.requiredNumber('REDIS_PORT');
+    return cachedEnv;
+  } catch (error: unknown) {
+    throw error;
+  }
+}

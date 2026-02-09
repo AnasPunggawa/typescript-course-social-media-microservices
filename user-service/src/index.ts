@@ -4,11 +4,13 @@ import type { Mongoose } from 'mongoose';
 import type { Server } from 'node:http';
 import process from 'node:process';
 
-import { SERVER_HOST, SERVER_PORT } from '@configs/env.config';
+import { loadEnv } from '@configs/env.config';
 import { setupRuntimeDirectories } from '@configs/runtime.config';
+import { JWTManager } from '@infrastructures/security';
 import { connection } from '@libs/db/connection.db';
 import { logError } from '@libs/logger/error.logger';
 import { logInfo } from '@libs/logger/info.logger';
+import { initLogger } from '@libs/logger/logger';
 import { startServer } from './server';
 
 let isShuttingDown: boolean = false;
@@ -17,6 +19,10 @@ let mongooseConnection: Mongoose | undefined;
 let redisConnection: Redis | undefined;
 
 async function bootstrap(): Promise<void> {
+  const env = loadEnv();
+
+  initLogger(env.NODE_ENV);
+
   await setupRuntimeDirectories();
 
   const connections = await connection();
@@ -24,11 +30,13 @@ async function bootstrap(): Promise<void> {
   mongooseConnection = connections.mongooseConnection;
   redisConnection = connections.redisConnection;
 
-  server = startServer(SERVER_PORT, SERVER_HOST);
+  server = startServer(env.SERVER_PORT, env.SERVER_HOST);
+
+  JWTManager.init(env);
 }
 
 bootstrap().catch((err: unknown) => {
-  logError('App Error', err, 'SERVER');
+  logError('User Service Error', err, 'BOOTSTRAP');
 
   process.exit(1);
 });
@@ -38,7 +46,7 @@ async function shutdown(signal: string): Promise<void> {
 
   isShuttingDown = true;
 
-  logInfo(`Received ${signal}`, 'SERVER');
+  logInfo(`Received ${signal}`, 'SERVER_SHUTDOWN');
 
   if (!server && !mongooseConnection && !redisConnection) {
     process.exitCode = 0;
@@ -58,7 +66,7 @@ async function shutdown(signal: string): Promise<void> {
             return reject(err);
           }
 
-          logInfo('HTTP server closed', 'SERVER');
+          logInfo('HTTP server closed', 'SERVER_SHUTDOWN');
 
           resolve();
         });
@@ -68,20 +76,21 @@ async function shutdown(signal: string): Promise<void> {
     if (redisConnection) {
       await redisConnection.quit();
 
-      logInfo('Redis closed', 'REDIS');
+      logInfo('Redis closed', 'SERVER_SHUTDOWN');
     }
 
     if (mongooseConnection) {
       await mongooseConnection.connection.close(false);
 
-      logInfo('MongoDB closed', 'MONGOOSE');
+      logInfo('MongoDB closed', 'SERVER_SHUTDOWN');
     }
 
     process.exitCode = 0;
 
     clearTimeout(forceExitTimer);
   } catch (error: unknown) {
-    console.error('Shutdown failed', error);
+    logError('Shutdown failed', error, 'SERVER_SHUTDOWN');
+
     process.exitCode = 1;
   }
 }
@@ -89,16 +98,16 @@ async function shutdown(signal: string): Promise<void> {
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 
-process.on('uncaughtException', async (reason: unknown) => {
-  console.error(reason);
+process.on('uncaughtException', async (error) => {
+  logError('uncaughtException', error, 'SERVER');
 
   shutdown('uncaughtException').finally(() => {
     process.exit(1);
   });
 });
 
-process.on('unhandledRejection', async (reason: unknown) => {
-  console.error(reason);
+process.on('unhandledRejection', async (error) => {
+  logError('unhandledRejection', error, 'SERVER');
 
   shutdown('unhandledRejection').finally(() => {
     process.exit(1);

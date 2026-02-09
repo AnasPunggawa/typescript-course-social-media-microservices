@@ -1,5 +1,13 @@
-import { logger } from './logger';
+import { getLogger } from './logger';
 
 export function logInfo(message: string, label: string = 'HTTP') {
-  logger.info(message, { label });
+  try {
+    const logger = getLogger();
+
+    logger.info(message, { label });
+  } catch {
+    console.log(
+      `[${new Date().toISOString()}] [USER_SERVICE] [${label}] [SAFE_LOG_INFO] [INFO]: ${message}`,
+    );
+  }
 }
