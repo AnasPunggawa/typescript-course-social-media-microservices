@@ -3,6 +3,7 @@ import helmet from 'helmet';
 
 import { cors } from '@configs/cors.config';
 import { loadEnv } from '@configs/env.config';
+import { apiRateLimit } from '@configs/rate-limit.config';
 import { errorGlobalMiddleware } from '@middlewares/error-global.middleware';
 
 export function createApp(): Express {
@@ -10,6 +11,7 @@ export function createApp(): Express {
 
   const app = express();
 
+  app.use(apiRateLimit());
   app.use(helmet());
   app.use(cors(NODE_ENV, ALLOWED_ORIGINS));
   app.use(urlencoded({ extended: true }));

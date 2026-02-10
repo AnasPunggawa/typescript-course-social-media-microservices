@@ -4,14 +4,17 @@ import process from 'node:process';
 
 import { loadEnv } from '@configs/env.config';
 import { setupRuntimeDirectories } from '@configs/runtime.config';
+import { connection } from '@libs/db/connection.db';
 import { logError } from '@libs/logger/error.logger';
 import { logInfo } from '@libs/logger/info.logger';
 import { initLogger } from '@libs/logger/logger';
+import type Redis from 'ioredis';
 import { startServer } from './server';
 
 let isShuttingDown: boolean = false;
 
 let server: Server | undefined;
+let redisConnection: Redis | undefined;
 
 async function bootstraps(): Promise<void> {
   const env = loadEnv();
@@ -19,6 +22,10 @@ async function bootstraps(): Promise<void> {
   initLogger(env.NODE_ENV);
 
   await setupRuntimeDirectories();
+
+  const connections = await connection();
+
+  redisConnection = connections.redisConnection;
 
   server = startServer(env.SERVER_PORT, env.SERVER_HOST);
 }
@@ -36,7 +43,7 @@ async function shutdown(signal: string): Promise<void> {
 
   logInfo(`Received ${signal}`, 'SERVER_SHUTDOWN');
 
-  if (!server) {
+  if (!server && !redisConnection) {
     process.exitCode = 0;
 
     return;
@@ -59,6 +66,12 @@ async function shutdown(signal: string): Promise<void> {
           resolve();
         });
       });
+    }
+
+    if (redisConnection) {
+      await redisConnection.quit();
+
+      logInfo('Redis closed', 'SERVER_SHUTDOWN');
     }
 
     process.exitCode = 0;
