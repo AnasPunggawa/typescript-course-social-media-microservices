@@ -5,8 +5,8 @@ import { TooManyRequestsException } from '@common/exceptions/too-many-requests.e
 import { getRedis } from '@libs/db/redis.db';
 
 export function apiRateLimit(
-  limitRequests: number = 100, // number of limit requests based on timeMs
-  timeMs: number = 1000 * 60 * 15, // 15 minutes
+  limitRequests: number = 50, // number of limit requests based on timeMs
+  timeMs: number = 1000 * 60 * 10, // 10 minutes
 ) {
   return rateLimit({
     windowMs: timeMs,
@@ -19,6 +19,7 @@ export function apiRateLimit(
 
     // Redis
     store: new RedisStore({
+      prefix: 'rl:service:user',
       async sendCommand(command: string, ...args: string[]) {
         return getRedis().call(command, args) as Promise<RedisReply>;
       },
