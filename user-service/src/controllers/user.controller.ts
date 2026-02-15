@@ -71,7 +71,7 @@ export class UserController {
 
       responseSuccess({
         res,
-        message: 'Access token rotated',
+        message: 'Access Token Rotated',
         statusCode: 200,
         data: {
           accessToken,

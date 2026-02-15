@@ -1,4 +1,5 @@
 import { type JwtPayload, sign, verify } from 'jsonwebtoken';
+import { readFileSync } from 'node:fs';
 
 import {
   ACCESS_TOKEN_TTL_MS,
@@ -12,6 +13,7 @@ import type {
   TokenPayloadSign,
   TokenType,
 } from '@common/types/refresh-token.type';
+import { JWT_ACCESS_PRIVATE_KEY_FILE } from '@configs/paths.config';
 
 export class JWTManager {
   private static config: Readonly<Record<TokenType, TokenConfig>> | undefined;
@@ -25,14 +27,21 @@ export class JWTManager {
   }
 
   public static init(env: EnvConfig): void {
+    const JWT_ACCESS_PRIVATE_KEY = readFileSync(
+      JWT_ACCESS_PRIVATE_KEY_FILE,
+      'utf8',
+    );
+
     JWTManager.config = {
       ACCESS: {
-        secret: env['JWT_ACCESS_SECRET'],
+        secret: JWT_ACCESS_PRIVATE_KEY,
         defaultExpiresIn: ACCESS_TOKEN_TTL_MS,
+        algorithm: 'RS256',
       },
       REFRESH: {
         secret: env['JWT_REFRESH_SECRET'],
         defaultExpiresIn: REFRESH_TOKEN_TTL_MS,
+        algorithm: 'HS256',
       },
     };
   }
@@ -64,16 +73,20 @@ export class JWTManager {
     payload: TokenPayloadSign,
     expiresIn?: number,
   ): string {
-    const { secret, defaultExpiresIn } = JWTManager.getConfig()[type];
+    const { secret, defaultExpiresIn, algorithm } =
+      JWTManager.getConfig()[type];
 
     return sign(payload, secret, {
+      algorithm,
       expiresIn: Math.floor((expiresIn ?? defaultExpiresIn) / 1000),
     });
   }
 
   private static verifyToken(type: TokenType, token: string): JwtPayload {
-    const { secret } = JWTManager.getConfig()[type];
+    const { secret, algorithm } = JWTManager.getConfig()[type];
 
-    return verify(token, secret) as JwtPayload;
+    return verify(token, secret, {
+      algorithms: [algorithm],
+    }) as JwtPayload;
   }
 }

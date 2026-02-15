@@ -14,9 +14,12 @@ export function userRateLimiterMiddleware(name: Limiter) {
     const limiter = UserLimiter.getLimiter(name);
 
     try {
-      const key = await limiter.consume(
-        req.signedCookies['refreshToken'] ?? req.ip ?? 'anonymous',
-      );
+      const unique =
+        name === 'login'
+          ? (req.body.username ?? req.ip ?? 'anonymous')
+          : (req.signedCookies['refreshToken'] ?? req.ip ?? 'anonymous');
+
+      const key = await limiter.consume(unique);
 
       res.set({
         'X-User-RateLimit-Policy': `q=${limiter.points};w=${limiter.duration}`,

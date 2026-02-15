@@ -10,7 +10,7 @@ export class ResponseRefreshTokenCookie {
       httpOnly: true,
       secure: loadEnv()['NODE_ENV'] === 'production',
       sameSite: 'strict',
-      path: '/users',
+      path: '/',
       signed: true,
     } as const;
   }

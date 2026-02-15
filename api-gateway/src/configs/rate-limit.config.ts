@@ -12,7 +12,7 @@ export function apiRateLimit(
     limit: limitRequest,
     windowMs: timeMs,
     standardHeaders: true,
-    legacyHeaders: true,
+    legacyHeaders: false,
     handler(_req, _res, next, options) {
       return next(new TooManyRequestException(options.message));
     },

@@ -1,3 +1,4 @@
+import type { Algorithm } from 'jsonwebtoken';
 import { Types } from 'mongoose';
 
 export type RefreshTokenStored = {
@@ -37,4 +38,5 @@ export type TokenType = 'ACCESS' | 'REFRESH';
 export type TokenConfig = {
   secret: string;
   defaultExpiresIn: number;
+  algorithm: Algorithm;
 };

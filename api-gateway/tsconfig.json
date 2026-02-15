@@ -21,7 +21,8 @@
       "@common/*": ["common/*"],
       "@configs/*": ["configs/*"],
       "@libs/*": ["libs/*"],
-      "@middlewares/*": ["middlewares/*"]
+      "@middlewares/*": ["middlewares/*"],
+      "@routes/*": ["routes/*"]
     },
 
     // Other Outputs

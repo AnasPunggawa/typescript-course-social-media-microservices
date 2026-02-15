@@ -1,16 +1,16 @@
 import type { Response } from 'express';
 
-type BaseResponse = {
+export type BaseResponse = {
   statusCode: number;
   message: string;
 };
 
-type ResponseSuccess<T> = BaseResponse & {
+export type ResponseSuccess<T> = BaseResponse & {
   success: true;
   data?: T | undefined;
 };
 
-type ResponseFail<T> = BaseResponse & {
+export type ResponseFail<T> = BaseResponse & {
   success: false;
   errors?: T | undefined;
 };
@@ -24,3 +24,7 @@ export type ResponseFailParams<T> = BaseResponse & {
   res: Response<ResponseFail<T>>;
   errors?: T;
 };
+
+export type UnknownResponse<TData, TErrors> =
+  | ResponseSuccess<TData>
+  | ResponseFail<TErrors>;

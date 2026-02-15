@@ -4,10 +4,14 @@ import helmet from 'helmet';
 import { cors } from '@configs/cors.config';
 import { loadEnv } from '@configs/env.config';
 import { apiRateLimit } from '@configs/rate-limit.config';
+import { logInfo } from '@libs/logger/info.logger';
 import { errorGlobalMiddleware } from '@middlewares/error-global.middleware';
+import { notFoundURLMiddleware } from '@middlewares/not-found-url.middleware';
+import { proxyMiddleware } from '@middlewares/proxy.middleware';
 
 export function createApp(): Express {
-  const { NODE_ENV, ALLOWED_ORIGINS } = loadEnv();
+  const { NODE_ENV, ALLOWED_ORIGINS, AUTH_SERVICE_URL, USER_SERVICE_URL } =
+    loadEnv();
 
   const app = express();
 
@@ -17,13 +21,25 @@ export function createApp(): Express {
   app.use(urlencoded({ extended: true }));
   app.use(json());
 
-  app.get('/', (_req, res) => {
+  app.use((req, _res, next) => {
+    logInfo(`REQUEST ${req.method} ${req.originalUrl}`, 'HTTP');
+
+    next();
+  });
+
+  app.get('/', (_, res) => {
     res.status(200).json({
       success: true,
       statusCode: 200,
-      message: 'API Gateway',
+      message: 'Api Gateway',
     });
   });
+
+  app.use('/api/auth', proxyMiddleware(AUTH_SERVICE_URL, 'USER_SERVICE_AUTH'));
+
+  app.use('/api/users', proxyMiddleware(USER_SERVICE_URL, 'USER_SERVICE'));
+
+  app.use(notFoundURLMiddleware);
 
   app.use(errorGlobalMiddleware);
 

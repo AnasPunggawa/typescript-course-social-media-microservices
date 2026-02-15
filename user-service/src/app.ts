@@ -5,8 +5,10 @@ import helmet from 'helmet';
 import { cors } from '@configs/cors.config';
 import { loadEnv } from '@configs/env.config';
 import { apiRateLimit } from '@configs/rate-limit.config';
+import { logInfo } from '@libs/logger/info.logger';
 import { errorGlobalMiddleware } from '@middlewares/global-error.middleware';
 import { notFoundURLMiddleware } from '@middlewares/not-found-url.middleware';
+import { authRouter } from '@routes/auth.route';
 import { userRouter } from '@routes/user.route';
 
 export function createApp(): Express {
@@ -21,7 +23,15 @@ export function createApp(): Express {
   app.use(urlencoded({ extended: true }));
   app.use(json());
 
-  app.use('/users', userRouter);
+  app.use((req, _res, next) => {
+    logInfo(`REQUEST ${req.method} ${req.originalUrl}`, 'HTTP');
+
+    next();
+  });
+
+  app.use('/', userRouter);
+
+  app.use('/auth', authRouter);
 
   app.use(notFoundURLMiddleware);
 

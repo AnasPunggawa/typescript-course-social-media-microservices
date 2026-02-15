@@ -16,7 +16,7 @@ async function waitForRedis(
     }, timeoutMs);
 
     function onConnecting(): void {
-      logInfo('Connecting to Redis', 'REDIS');
+      logInfo('Connecting to Redis...', 'REDIS');
     }
 
     function onReady(): void {
