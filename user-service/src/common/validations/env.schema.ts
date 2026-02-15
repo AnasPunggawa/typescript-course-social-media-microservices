@@ -31,7 +31,6 @@ export const envSchema = z.object({
 
   MONGO_URI: z.url(),
 
-  // JWT_ACCESS_SECRET: z.string().min(32),
   JWT_REFRESH_SECRET: z.string().min(32),
 
   REDIS_HOST: z.string().min(1).default('localhost'),

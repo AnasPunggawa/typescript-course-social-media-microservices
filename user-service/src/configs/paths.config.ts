@@ -5,4 +5,4 @@ export const ROOT = cwd();
 
 export const LOGS_DIR = join(ROOT, 'logs');
 
-export const JWT_ACCESS_PRIVATE_KEY_FILE = join(ROOT, 'access-private.key');
+export const JWT_ACCESS_PRIVATE_KEY_FILE = join(ROOT, 'access-private.pem');
