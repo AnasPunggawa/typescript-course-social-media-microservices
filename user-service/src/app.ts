@@ -25,9 +25,9 @@ export function createApp(): Express {
 
   app.use(loggerMiddleware);
 
-  app.use('/', userRouter);
+  app.use('/api/users', userRouter);
 
-  app.use('/auth', authRouter);
+  app.use('/api/auth', authRouter);
 
   app.use(notFoundURLMiddleware);
 

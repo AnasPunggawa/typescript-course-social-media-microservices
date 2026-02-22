@@ -8,6 +8,7 @@ import { errorGlobalMiddleware } from '@middlewares/error-global.middleware';
 import { loggerMiddleware } from '@middlewares/logger.middleware';
 import { notFoundURLMiddleware } from '@middlewares/not-found-url.middleware';
 import { proxyMiddleware } from '@middlewares/proxy.middleware';
+import { authenticationMiddleware } from './middlewares/authentication.middleware';
 
 export function createApp(): Express {
   const { NODE_ENV, ALLOWED_ORIGINS, AUTH_SERVICE_URL, USER_SERVICE_URL } =
@@ -23,9 +24,28 @@ export function createApp(): Express {
 
   app.use(loggerMiddleware);
 
-  app.use('/api/auth', proxyMiddleware(AUTH_SERVICE_URL, 'USER_SERVICE_AUTH'));
+  app.use(
+    '/api/v1/auth',
+    proxyMiddleware({
+      target: AUTH_SERVICE_URL,
+      service: 'USER_SERVICE_AUTH',
+      pathRewrite: {
+        '/api/v1/auth': '/api/auth',
+      },
+    }),
+  );
 
-  app.use('/api/users', proxyMiddleware(USER_SERVICE_URL, 'USER_SERVICE'));
+  app.use(
+    '/api/v1/users',
+    authenticationMiddleware,
+    proxyMiddleware({
+      target: USER_SERVICE_URL,
+      service: 'USER_SERVICE',
+      pathRewrite: {
+        '/api/v1/users': '/api/users',
+      },
+    }),
+  );
 
   app.use(notFoundURLMiddleware);
 

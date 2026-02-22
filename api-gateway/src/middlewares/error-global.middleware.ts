@@ -4,6 +4,7 @@ import { ClientException } from '@common/exceptions/client.exception';
 import { logError } from '@libs/logger/error.logger';
 import { responseFail } from '@libs/responses/fail.response';
 import { responseSuccess } from '@libs/responses/success.response';
+import { JsonWebTokenError } from 'jsonwebtoken';
 
 export function errorGlobalMiddleware(
   error: unknown,
@@ -21,6 +22,16 @@ export function errorGlobalMiddleware(
     responseSuccess({
       res,
       statusCode: error.statusCode,
+      message: error.message,
+    });
+
+    return;
+  }
+
+  if (error instanceof JsonWebTokenError) {
+    responseFail({
+      res,
+      statusCode: 401,
       message: error.message,
     });
 

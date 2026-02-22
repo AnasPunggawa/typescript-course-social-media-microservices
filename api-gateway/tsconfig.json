@@ -24,6 +24,7 @@
       "@middlewares/*": ["middlewares/*"],
       "@routes/*": ["routes/*"]
     },
+    "typeRoots": ["./node_modules/@types", "./src/common/types/root"],
 
     // Other Outputs
     "sourceMap": true,

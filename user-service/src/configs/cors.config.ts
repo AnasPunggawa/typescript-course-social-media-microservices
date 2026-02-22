@@ -18,7 +18,7 @@ export function cors(NODE_ENV: NodeEnv, ALLOWED_ORIGINS: string[]) {
       return callback(new Error('Not Allowed by CORS'));
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-User-Id'],
     exposedHeaders: ['X-Some-Custom-Header'],
     credentials: true,
     maxAge: 60 * 60 * 12, // 12 hours

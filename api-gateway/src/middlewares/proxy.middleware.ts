@@ -9,11 +9,17 @@ import { logError } from '@libs/logger/error.logger';
 import { logInfo } from '@libs/logger/info.logger';
 import { responseFail } from '@libs/responses/fail.response';
 
-export function proxyMiddleware(
-  target: string,
-  service: string,
-  pathRewrite?: Record<string, string>,
-) {
+type ProxyMiddlewareParams = {
+  target: string;
+  service: string;
+  pathRewrite?: Record<string, string>;
+};
+
+export function proxyMiddleware({
+  target,
+  service,
+  pathRewrite,
+}: ProxyMiddlewareParams) {
   const options: Options<Request, Response> = {
     target,
     changeOrigin: true,
@@ -22,10 +28,14 @@ export function proxyMiddleware(
     proxyTimeout: 1000 * 5, // 5 seconds
     on: {
       proxyReq(proxyReq, req) {
+        if (req.user) {
+          proxyReq.setHeader('X-User-Id', req.user.id);
+        }
+
         const fullTargetURL = target + req.path;
 
         logInfo(
-          `${service} Proxy Request ${req.method} ${req.url} -> ${fullTargetURL}`,
+          `${service} Proxy Request ${req.method} ${req.originalUrl} -> ${fullTargetURL}`,
           'PROXY',
         );
 
@@ -35,7 +45,7 @@ export function proxyMiddleware(
         const fullTargetURL = target + req.path;
 
         logInfo(
-          `${service} Proxy Response ${req.method} ${req.url} -> ${fullTargetURL} [${proxyRes.statusCode}]`,
+          `${service} Proxy Response ${req.method} ${req.originalUrl} -> ${fullTargetURL} [${proxyRes.statusCode}]`,
           'PROXY',
         );
       },
@@ -54,6 +64,16 @@ export function proxyMiddleware(
   };
 
   return createProxyMiddleware<Request, Response, NextFunction>(
-    pathRewrite ? { ...options, pathRewrite } : options,
+    pathRewrite
+      ? {
+          ...options,
+          pathRewrite(_path, req) {
+            const [replace, value]: [string, string] =
+              Object.entries(pathRewrite)[0]!;
+
+            return req.originalUrl.replace(replace, value);
+          },
+        }
+      : options,
   );
 }

@@ -19,6 +19,7 @@ export function cors(NODE_ENV: NodeEnvironment, ALLOWED_ORIGINS: string[]) {
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    exposedHeaders: ['X-User-Id'],
     credentials: true,
     maxAge: 60 * 60 * 12, // 12 hours
     optionsSuccessStatus: 204,

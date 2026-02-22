@@ -206,5 +206,5 @@ build
 /src/03-stream/output.txt.gz.enc
 
 # SECRETS KEYS
-access-private.key
-access-public.key
+*.key
+*.pem
