@@ -133,6 +133,18 @@ export class UserService {
     return users.map((user) => UserService.map(user));
   }
 
+  public static async getCurrent(id: string | undefined): Promise<UserPublic> {
+    const userId = UserSchema.id.parse(id);
+
+    const user = await UserRepository.selectUserById(userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return UserService.map(user);
+  }
+
   private static map(data: UserStored): UserPublic {
     return {
       id: data._id.toString(),

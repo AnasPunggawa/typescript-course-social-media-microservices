@@ -8,3 +8,9 @@ export const userRouter = Router({
 });
 
 userRouter.get('/', userRateLimiterMiddleware('auth'), UserController.getUsers);
+
+userRouter.get(
+  '/current',
+  userRateLimiterMiddleware('auth'),
+  UserController.getCurrent,
+);

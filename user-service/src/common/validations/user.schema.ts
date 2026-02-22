@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import z from 'zod';
 
 export class UserSchema {
@@ -12,4 +13,11 @@ export class UserSchema {
     username: true,
     password: true,
   });
+
+  public static readonly id = z
+    .string({ error: 'Invalid user id' })
+    .refine((val) => Types.ObjectId.isValid(val), {
+      error: 'Invalid user id',
+    })
+    .transform((val) => new Types.ObjectId(val));
 }

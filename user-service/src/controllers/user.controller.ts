@@ -114,9 +114,28 @@ export class UserController {
 
       responseSuccess({
         res,
-        message: 'Fetch all users',
+        message: 'Fetch All Users',
         statusCode: 200,
         data: { users },
+      });
+    } catch (error: unknown) {
+      next(error);
+    }
+  }
+
+  public static async getCurrent(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const user = await UserService.getCurrent(req.get('X-User-Id'));
+
+      responseSuccess({
+        res,
+        message: 'Fetch Current User',
+        statusCode: 200,
+        data: { user },
       });
     } catch (error: unknown) {
       next(error);
