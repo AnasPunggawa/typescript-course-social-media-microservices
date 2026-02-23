@@ -28,6 +28,8 @@ export type TokenAndUserId = Pick<RefreshTokenStored, 'token' | 'user'>;
 
 export type RefreshTokenPublic = Omit<RefreshTokenStored, '__v'>;
 
+export type SignTokenParams = { userId: Types.ObjectId };
+
 export type Tokens = {
   accessToken: string;
   refreshToken: string;
@@ -35,8 +37,15 @@ export type Tokens = {
 
 export type TokenType = 'ACCESS' | 'REFRESH';
 
-export type TokenConfig = {
+export type AccessTokenConfig = {
   secret: string;
   defaultExpiresIn: number;
   algorithm: Algorithm;
+};
+
+export type RefreshTokenConfig = {
+  secret: string;
+  randomBytesSize: number;
+  algorithm: string;
+  encoding: 'hex';
 };

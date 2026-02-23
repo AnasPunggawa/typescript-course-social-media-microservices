@@ -14,6 +14,8 @@ export type UserLogin = UserLoginRequest;
 
 export type UserLoginResponse = Tokens;
 
+export type ReissueTokensResponse = Tokens;
+
 export type UserStored = UserRegister & {
   _id: Types.ObjectId;
   __v: number;

@@ -3,8 +3,9 @@ import { Types } from 'mongoose';
 import { REFRESH_TOKEN_TTL_MS } from '@common/constants/token.constant';
 import { NotFoundException } from '@common/exceptions/not-found.exception';
 import { UnauthenticatedException } from '@common/exceptions/unauthenticated.exception';
-import type { Tokens } from '@common/types/refresh-token.type';
+import type { SignTokenParams, Tokens } from '@common/types/refresh-token.type';
 import type {
+  ReissueTokensResponse,
   UserLoginRequest,
   UserLoginResponse,
   UserPublic,
@@ -30,15 +31,11 @@ export class UserService {
 
     const user = await UserRepository.register(userRegister);
 
-    const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
-
-    const { accessToken, refreshToken } = UserService.signTokens(user);
-
-    await RefreshTokenRepository.store({
-      token: refreshToken,
-      user: user._id,
-      expiresAt,
+    const { accessToken, refreshToken } = UserService.signTokens({
+      userId: user._id,
     });
+
+    await UserService.storeToken(refreshToken, user._id);
 
     return {
       user: UserService.map(user),
@@ -69,15 +66,11 @@ export class UserService {
       throw new UnauthenticatedException('Username or Password wrong');
     }
 
-    const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
-
-    const { accessToken, refreshToken } = UserService.signTokens(user);
-
-    await RefreshTokenRepository.store({
-      token: refreshToken,
-      user: user._id,
-      expiresAt,
+    const { accessToken, refreshToken } = UserService.signTokens({
+      userId: user._id,
     });
+
+    await UserService.storeToken(refreshToken, user._id);
 
     return {
       accessToken,
@@ -86,45 +79,42 @@ export class UserService {
   }
 
   public static async reissueAccessToken(
-    refreshToken: string | undefined,
-  ): Promise<string> {
-    if (!refreshToken) {
+    token: string | undefined,
+  ): Promise<ReissueTokensResponse> {
+    if (!token) {
       throw new UnauthenticatedException('Refresh token is required');
     }
 
-    const verifiedToken = JWTManager.verifyRefreshToken(refreshToken);
+    const hashedToken = JWTManager.hashRefreshToken(token);
 
     const refreshTokenData =
-      await RefreshTokenRepository.selectTokenByTokenAndUserId({
-        token: refreshToken,
-        user: UserService.toMongooseObjectId(verifiedToken.sub),
-      });
+      await RefreshTokenRepository.selectToken(hashedToken);
 
     if (!refreshTokenData) {
       throw new UnauthenticatedException('Refresh token revoked');
     }
 
-    return JWTManager.signAccessToken({
-      sub: refreshTokenData.user.toString(),
+    UserService.isValidToken(refreshTokenData.token, token);
+
+    await RefreshTokenRepository.deleteToken(hashedToken);
+
+    const { accessToken, refreshToken } = UserService.signTokens({
+      userId: refreshTokenData.user,
     });
+
+    await UserService.storeToken(refreshToken, refreshTokenData.user);
+
+    return { accessToken, refreshToken };
   }
 
   public static async logout(refreshToken: string | undefined): Promise<void> {
     if (!refreshToken) {
-      throw new UnauthenticatedException('Refresh token is required');
+      return;
     }
 
-    const verifiedToken = JWTManager.verifyRefreshToken(refreshToken);
+    const hashedToken = JWTManager.hashRefreshToken(refreshToken);
 
-    const deleteResult =
-      await RefreshTokenRepository.deleteTokenByTokenAndUserId({
-        token: refreshToken,
-        user: UserService.toMongooseObjectId(verifiedToken.sub),
-      });
-
-    if (deleteResult.deletedCount === 0) {
-      throw new NotFoundException('Refresh token not found or already revoked');
-    }
+    await RefreshTokenRepository.deleteToken(hashedToken);
   }
 
   public static async getUsers(): Promise<UserPublic[]> {
@@ -156,22 +146,35 @@ export class UserService {
     };
   }
 
-  private static toMongooseObjectId(id: string | undefined): Types.ObjectId {
-    return new Types.ObjectId(id);
-  }
-
-  private static signTokens(user: UserStored): Tokens {
+  private static signTokens({ userId }: SignTokenParams): Tokens {
     const accessToken = JWTManager.signAccessToken({
-      sub: user._id.toString(),
+      sub: userId.toString(),
     });
 
-    const refreshToken = JWTManager.signRefreshToken({
-      sub: user._id.toString(),
-    });
+    const refreshToken = JWTManager.signRefreshToken();
 
     return {
       accessToken,
       refreshToken,
     };
+  }
+
+  private static async storeToken(
+    token: string,
+    userId: Types.ObjectId,
+  ): Promise<void> {
+    await RefreshTokenRepository.store({
+      token: JWTManager.hashRefreshToken(token),
+      user: userId,
+      expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
+    });
+  }
+
+  private static isValidToken(hashedToken: string, token: string): void {
+    const isValid = JWTManager.verifyRefreshToken(hashedToken, token);
+
+    if (!isValid) {
+      throw new UnauthenticatedException('Invalid refresh token');
+    }
   }
 }

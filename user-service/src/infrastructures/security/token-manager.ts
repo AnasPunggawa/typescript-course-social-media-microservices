@@ -1,29 +1,35 @@
 import { type JwtPayload, sign, verify } from 'jsonwebtoken';
+import { Buffer } from 'node:buffer';
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
-import {
-  ACCESS_TOKEN_TTL_MS,
-  REFRESH_TOKEN_TTL_MS,
-} from '@common/constants/token.constant';
+import { ACCESS_TOKEN_TTL_MS } from '@common/constants/token.constant';
 import { EnvConfig } from '@common/types/env.type';
 import type {
+  AccessTokenConfig,
   AccessTokenPayloadSign,
-  RefreshTokenPayloadSign,
-  TokenConfig,
-  TokenPayloadSign,
+  RefreshTokenConfig,
   TokenType,
 } from '@common/types/refresh-token.type';
 import { JWT_ACCESS_PRIVATE_KEY_FILE } from '@configs/paths.config';
 
 export class JWTManager {
-  private static config: Readonly<Record<TokenType, TokenConfig>> | undefined;
+  private static ACCESS_TOKEN_CONFIG: AccessTokenConfig | undefined;
 
-  private static getConfig(): Readonly<Record<TokenType, TokenConfig>> {
-    if (!JWTManager.config) {
+  private static REFRESH_TOKEN_CONFIG: RefreshTokenConfig | undefined;
+
+  private static getConfig(type: 'ACCESS'): AccessTokenConfig;
+  private static getConfig(type: 'REFRESH'): RefreshTokenConfig;
+  private static getConfig(type: TokenType) {
+    if (!JWTManager.ACCESS_TOKEN_CONFIG || !JWTManager.REFRESH_TOKEN_CONFIG) {
       throw new Error('JWTManager not initialized');
     }
 
-    return JWTManager.config;
+    if (type === 'ACCESS') {
+      return JWTManager.ACCESS_TOKEN_CONFIG;
+    }
+
+    return JWTManager.REFRESH_TOKEN_CONFIG;
   }
 
   public static init(env: EnvConfig): void {
@@ -32,17 +38,17 @@ export class JWTManager {
       'utf8',
     );
 
-    JWTManager.config = {
-      ACCESS: {
-        secret: JWT_ACCESS_PRIVATE_KEY,
-        defaultExpiresIn: ACCESS_TOKEN_TTL_MS,
-        algorithm: 'RS256',
-      },
-      REFRESH: {
-        secret: env['JWT_REFRESH_SECRET'],
-        defaultExpiresIn: REFRESH_TOKEN_TTL_MS,
-        algorithm: 'HS256',
-      },
+    JWTManager.ACCESS_TOKEN_CONFIG = {
+      algorithm: 'RS256',
+      defaultExpiresIn: ACCESS_TOKEN_TTL_MS,
+      secret: JWT_ACCESS_PRIVATE_KEY,
+    };
+
+    JWTManager.REFRESH_TOKEN_CONFIG = {
+      algorithm: 'sha256',
+      encoding: 'hex',
+      randomBytesSize: 32,
+      secret: env['JWT_REFRESH_SECRET'],
     };
   }
 
@@ -50,43 +56,53 @@ export class JWTManager {
     payload: AccessTokenPayloadSign,
     expiresIn?: number,
   ): string {
-    return JWTManager.signToken('ACCESS', payload, expiresIn);
-  }
-
-  public static signRefreshToken(
-    payload: RefreshTokenPayloadSign,
-    expiresIn?: number,
-  ): string {
-    return JWTManager.signToken('REFRESH', payload, expiresIn);
-  }
-
-  public static verifyAccessToken(token: string): JwtPayload {
-    return JWTManager.verifyToken('ACCESS', token);
-  }
-
-  public static verifyRefreshToken(token: string): JwtPayload {
-    return JWTManager.verifyToken('REFRESH', token);
-  }
-
-  private static signToken(
-    type: TokenType,
-    payload: TokenPayloadSign,
-    expiresIn?: number,
-  ): string {
-    const { secret, defaultExpiresIn, algorithm } =
-      JWTManager.getConfig()[type];
+    const { algorithm, secret, defaultExpiresIn } =
+      JWTManager.getConfig('ACCESS');
 
     return sign(payload, secret, {
-      algorithm,
+      algorithm: algorithm,
       expiresIn: Math.floor((expiresIn ?? defaultExpiresIn) / 1000),
     });
   }
 
-  private static verifyToken(type: TokenType, token: string): JwtPayload {
-    const { secret, algorithm } = JWTManager.getConfig()[type];
+  public static signRefreshToken(): string {
+    const { encoding, randomBytesSize } = JWTManager.getConfig('REFRESH');
+
+    return randomBytes(randomBytesSize).toString(encoding);
+  }
+
+  public static hashRefreshToken(token: string): string {
+    const { algorithm, encoding, secret } = JWTManager.getConfig('REFRESH');
+
+    const data = token + secret;
+
+    return createHash(algorithm).update(data).digest(encoding);
+  }
+
+  public static verifyAccessToken(token: string): JwtPayload {
+    const { algorithm, secret } = JWTManager.getConfig('ACCESS');
 
     return verify(token, secret, {
       algorithms: [algorithm],
     }) as JwtPayload;
+  }
+
+  public static verifyRefreshToken(
+    hashedToken: string,
+    token: string,
+  ): boolean {
+    const { algorithm, encoding, secret } = JWTManager.getConfig('REFRESH');
+
+    const data = token + secret;
+
+    const computedHash = createHash(algorithm).update(data).digest();
+
+    const storedHashBuffer = Buffer.from(hashedToken, encoding);
+
+    if (computedHash.length !== storedHashBuffer.length) {
+      return false;
+    }
+
+    return timingSafeEqual(computedHash, storedHashBuffer);
   }
 }

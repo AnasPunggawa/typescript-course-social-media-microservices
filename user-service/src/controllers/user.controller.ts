@@ -39,11 +39,11 @@ export class UserController {
     next: NextFunction,
   ) {
     try {
-      const tokens = await UserService.login(req.body);
+      const { accessToken, refreshToken } = await UserService.login(req.body);
 
       ResponseRefreshTokenCookie.set({
         res,
-        refreshToken: tokens.refreshToken,
+        refreshToken: refreshToken,
       });
 
       responseSuccess({
@@ -51,7 +51,7 @@ export class UserController {
         message: 'User Logged',
         statusCode: 200,
         data: {
-          accessToken: tokens.accessToken,
+          accessToken: accessToken,
         },
       });
     } catch (error: unknown) {
@@ -65,9 +65,10 @@ export class UserController {
     next: NextFunction,
   ) {
     try {
-      const accessToken = await UserService.reissueAccessToken(
-        req.signedCookies['refreshToken'],
-      );
+      const { accessToken, refreshToken } =
+        await UserService.reissueAccessToken(req.signedCookies['refreshToken']);
+
+      ResponseRefreshTokenCookie.set({ res, refreshToken });
 
       responseSuccess({
         res,
