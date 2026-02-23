@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { UserController } from '@controllers/user.controller';
+import { AuthController } from '@controllers/auth.controller';
 import { userRateLimiterMiddleware } from '@middlewares/redis-rate-limiter.middleware';
 
 export const authRouter = Router({
@@ -10,23 +10,23 @@ export const authRouter = Router({
 authRouter.post(
   '/register',
   userRateLimiterMiddleware('register'),
-  UserController.postRegister,
+  AuthController.postRegister,
 );
 
 authRouter.post(
   '/login',
   userRateLimiterMiddleware('login'),
-  UserController.postLogin,
+  AuthController.postLogin,
 );
 
 authRouter.get(
   '/refresh',
   userRateLimiterMiddleware('refresh'),
-  UserController.getRefreshAccessToken,
+  AuthController.getRefreshAccessToken,
 );
 
 authRouter.delete(
   '/logout',
   userRateLimiterMiddleware('logout'),
-  UserController.deleteLogout,
+  AuthController.deleteLogout,
 );
