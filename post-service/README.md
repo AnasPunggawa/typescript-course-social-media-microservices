@@ -1,0 +1,24 @@
+# POST SERVICE
+
+## .env FILE
+
+```
+
+# NODE
+NODE_ENV=
+
+# SERVICE
+SERVICE_HOST=
+SERVICE_PORT=
+
+# DATABASE
+MONGO_URI=
+
+# REDIS
+REDIS_HOST=
+REDIS_PORT=
+
+
+```
+
+---
