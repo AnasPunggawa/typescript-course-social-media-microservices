@@ -1,7 +1,7 @@
 import { logInfo } from '@libs/logger/info.logger';
 import type { NextFunction, Request, Response } from 'express';
 
-export function loggerMiddleware(
+export function logMiddleware(
   req: Request,
   _res: Response,
   next: NextFunction,
