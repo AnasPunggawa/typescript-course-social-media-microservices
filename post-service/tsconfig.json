@@ -20,11 +20,13 @@
     "typeRoots": ["./node_modules/@types"],
     "paths": {
       "@common/*": ["common/*"],
+      "@controllers/*": ["controllers/*"],
       "@configs/*": ["configs/*"],
       "@libs/*": ["libs/*"],
       "@middlewares/*": ["middlewares/*"],
       "@models/*": ["models/*"],
       "@repositories/*": ["repositories/*"],
+      "@routes/*": ["routes/*"],
       "@services/*": ["services/*"]
     },
 

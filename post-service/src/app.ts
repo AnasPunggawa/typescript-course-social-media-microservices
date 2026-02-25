@@ -2,10 +2,10 @@ import express, { json, urlencoded, type Express } from 'express';
 import helmet from 'helmet';
 
 import { apiRateLimit } from '@configs/rate-limit.config';
-import { responseSuccess } from '@libs/responses/success.response';
 import { globalErrorMiddleware } from '@middlewares/global-error.middleware';
 import { logMiddleware } from '@middlewares/log.middleware';
 import { notFoundURLMiddleware } from '@middlewares/not-found-url.middleware';
+import { postRouter } from '@routes/post.route';
 
 export function createApp(): Express {
   const app = express();
@@ -17,9 +17,7 @@ export function createApp(): Express {
 
   app.use(logMiddleware);
 
-  app.get('/', (_req, res) => {
-    responseSuccess({ res, statusCode: 200, message: 'Post Service' });
-  });
+  app.use('/api/posts', postRouter);
 
   app.use(notFoundURLMiddleware);
 
