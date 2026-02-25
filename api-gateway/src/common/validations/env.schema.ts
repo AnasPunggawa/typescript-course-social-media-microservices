@@ -28,6 +28,7 @@ export const envSchema = z.object({
 
   AUTH_SERVICE_URL: z.url(),
   USER_SERVICE_URL: z.url(),
+  POST_SERVICE_URL: z.url(),
 
   REDIS_HOST: z.string().min(1).default('localhost'),
   REDIS_PORT: z.coerce.number().int().positive().default(3000),

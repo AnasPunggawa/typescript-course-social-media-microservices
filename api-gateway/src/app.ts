@@ -11,8 +11,13 @@ import { proxyMiddleware } from '@middlewares/proxy.middleware';
 import { authenticationMiddleware } from './middlewares/authentication.middleware';
 
 export function createApp(): Express {
-  const { NODE_ENV, ALLOWED_ORIGINS, AUTH_SERVICE_URL, USER_SERVICE_URL } =
-    loadEnv();
+  const {
+    ALLOWED_ORIGINS,
+    AUTH_SERVICE_URL,
+    NODE_ENV,
+    POST_SERVICE_URL,
+    USER_SERVICE_URL,
+  } = loadEnv();
 
   const app = express();
 
@@ -43,6 +48,18 @@ export function createApp(): Express {
       service: 'USER_SERVICE',
       pathRewrite: {
         '/api/v1/users': '/api/users',
+      },
+    }),
+  );
+
+  app.use(
+    '/api/v1/posts',
+    authenticationMiddleware,
+    proxyMiddleware({
+      target: POST_SERVICE_URL,
+      service: 'POST_SERVICE',
+      pathRewrite: {
+        '/api/v1/posts': '/api/posts',
       },
     }),
   );
