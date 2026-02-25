@@ -1,3 +1,4 @@
+import { PostLimiter } from '@libs/limiters/post.limiter';
 import { logError } from '@libs/logger/error.log';
 import { logInfo } from '@libs/logger/info.logger';
 import Redis from 'ioredis';
@@ -53,6 +54,8 @@ export async function initRedis(PORT: number, HOST: string): Promise<Redis> {
   });
 
   redisClient = await waitForRedisReady(client);
+
+  PostLimiter.initLimiters();
 
   client.on('error', (error: Error) => {
     logError('Redis runtime error', error, 'RUNTIME_REDIS');

@@ -19,9 +19,9 @@ let redisConnection: Redis | undefined;
 async function bootstraps(): Promise<void> {
   const env = loadEnv();
 
-  initLogger(env.NODE_ENV);
-
   await setupRuntimeDirectories();
+
+  initLogger(env.NODE_ENV);
 
   const connections = await connection();
 
