@@ -15,3 +15,5 @@ export type PostPublic = Omit<PostStored, '_id' | '__v' | 'user'> & {
   id: string;
   user: string;
 };
+
+export type PostCreateRequest = Omit<PostCreate, 'user'>;

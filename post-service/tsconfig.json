@@ -24,7 +24,8 @@
       "@libs/*": ["libs/*"],
       "@middlewares/*": ["middlewares/*"],
       "@models/*": ["models/*"],
-      "@repositories/*": ["repositories/*"]
+      "@repositories/*": ["repositories/*"],
+      "@services/*": ["services/*"]
     },
 
     // Other Outputs
