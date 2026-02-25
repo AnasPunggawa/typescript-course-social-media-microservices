@@ -22,7 +22,9 @@
       "@common/*": ["common/*"],
       "@configs/*": ["configs/*"],
       "@libs/*": ["libs/*"],
-      "@middlewares/*": ["middlewares/*"]
+      "@middlewares/*": ["middlewares/*"],
+      "@models/*": ["models/*"],
+      "@repositories/*": ["repositories/*"]
     },
 
     // Other Outputs

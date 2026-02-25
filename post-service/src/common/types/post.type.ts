@@ -2,9 +2,9 @@ import { PostSchema } from '@common/validations/post.schema';
 import { Types } from 'mongoose';
 import z from 'zod';
 
-export type CreatePost = z.infer<typeof PostSchema.create>;
+export type PostCreate = z.infer<typeof PostSchema.create>;
 
-export type PostStored = CreatePost & {
+export type PostStored = PostCreate & {
   _id: Types.ObjectId;
   __v: number;
   createdAt: Date;
