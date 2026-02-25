@@ -1,7 +1,7 @@
 import type { PostPublic, PostStored } from '@common/types/post.type';
 
 export class PostDTO {
-  public static map(data: PostStored): Readonly<PostPublic> {
+  public static map(data: PostStored): PostPublic {
     return {
       id: data._id.toString(),
       user: data.user.toString(),
@@ -9,6 +9,6 @@ export class PostDTO {
       mediaUrls: data.mediaUrls,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
-    } as const;
+    };
   }
 }
