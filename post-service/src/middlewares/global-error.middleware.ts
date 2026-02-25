@@ -25,6 +25,8 @@ export function globalErrorMiddleware(
       message: 'Validation failed',
       errors: error.issues,
     });
+
+    return;
   }
 
   if (error instanceof ClientException) {
