@@ -2,6 +2,7 @@ import { MongoServerError } from 'mongodb';
 import { Error as MongooseError } from 'mongoose';
 
 export class MongooseTypeError {
+  // Mongoose Errors
   public static isValidationError(
     error: unknown,
   ): error is MongooseError.ValidationError {
@@ -20,6 +21,7 @@ export class MongooseTypeError {
     return error instanceof MongoServerError && error.code === 11000;
   }
 
+  // MongoDB Error
   public static isServerError(error: unknown): error is MongoServerError {
     return error instanceof MongoServerError;
   }
