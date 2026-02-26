@@ -1,4 +1,4 @@
-export type Limiter = 'create';
+export type Limiter = 'create' | 'get-posts';
 
 export type RateLimitRedisConfig = {
   keyPrefix: string;

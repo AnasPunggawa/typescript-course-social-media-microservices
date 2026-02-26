@@ -23,4 +23,23 @@ export class PostController {
       next(error);
     }
   }
+
+  public static async getPosts(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const posts = await PostService.getPosts(req.query);
+
+      responseSuccess({
+        res,
+        statusCode: 200,
+        message: 'Fetch All Posts',
+        data: { posts },
+      });
+    } catch (error: unknown) {
+      next(error);
+    }
+  }
 }

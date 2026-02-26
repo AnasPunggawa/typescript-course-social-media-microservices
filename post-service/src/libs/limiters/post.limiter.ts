@@ -16,6 +16,12 @@ export class PostLimiter {
       duration: 60, // 5 requests/60 seconds
       blockDuration: 60, // block request for 60 seconds if the limits has reached
     },
+    'get-posts': {
+      keyPrefix: 'rl:service:post:get-posts',
+      points: 10,
+      duration: 60,
+      blockDuration: 60,
+    },
   };
 
   public static initLimiters(): void {

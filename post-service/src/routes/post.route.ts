@@ -10,3 +10,9 @@ postRouter.post(
   redisRateLimiterMiddleware('create'),
   PostController.postPost,
 );
+
+postRouter.get(
+  '/',
+  redisRateLimiterMiddleware('get-posts'),
+  PostController.getPosts,
+);
