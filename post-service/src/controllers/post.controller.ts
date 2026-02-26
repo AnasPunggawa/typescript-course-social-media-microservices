@@ -42,4 +42,23 @@ export class PostController {
       next(error);
     }
   }
+
+  public static async getPost(
+    req: Request<{ postId: string }>,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const post = await PostService.getPost(req.params.postId);
+
+      responseSuccess({
+        res,
+        statusCode: 200,
+        message: 'Fetch single post',
+        data: { post },
+      });
+    } catch (error: unknown) {
+      next(error);
+    }
+  }
 }

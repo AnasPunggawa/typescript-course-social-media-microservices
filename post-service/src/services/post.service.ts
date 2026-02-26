@@ -1,4 +1,5 @@
 import { PostDTO } from '@common/dto/post.dto';
+import { NotFoundException } from '@common/exceptions/not-found.exception';
 import { PaginationQueryRequest } from '@common/types/pagination.type';
 import type {
   PostCreateRequest,
@@ -42,5 +43,17 @@ export class PostService {
         totalPage: Math.ceil(totalPosts / query.size),
       },
     };
+  }
+
+  public static async getPost(id: string): Promise<PostPublic> {
+    const postId = PostSchema.id.parse(id);
+
+    const post = await PostRepository.selectPostById(postId);
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    return PostDTO.map(post);
   }
 }

@@ -19,4 +19,9 @@ export class PostSchema {
     size: z.coerce.number().pipe(z.enum(DATA_SIZES)).default(10),
     sortBy: z.enum(SORT_BY).default('asc'),
   });
+
+  public static readonly id = z
+    .string()
+    .refine((val) => Types.ObjectId.isValid(val), { error: 'Invalid post id' })
+    .transform((val) => new Types.ObjectId(val));
 }

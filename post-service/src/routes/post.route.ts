@@ -16,3 +16,9 @@ postRouter.get(
   redisRateLimiterMiddleware('get-posts'),
   PostController.getPosts,
 );
+
+postRouter.get(
+  '/:postId',
+  redisRateLimiterMiddleware('get-post'),
+  PostController.getPost,
+);

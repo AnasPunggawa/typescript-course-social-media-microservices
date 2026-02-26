@@ -4,6 +4,7 @@ import type {
   QueryPosts,
 } from '@common/types/post.type';
 import { Post } from '@models/post.model';
+import { Types } from 'mongoose';
 
 export class PostRepository {
   public static async store(data: PostCreate): Promise<PostStored> {
@@ -21,5 +22,9 @@ export class PostRepository {
 
   public static countPosts(): Promise<number> {
     return Post.countDocuments();
+  }
+
+  public static selectPostById(id: Types.ObjectId): Promise<PostStored | null> {
+    return Post.findById(id).select({ __v: 0 }).lean();
   }
 }

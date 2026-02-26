@@ -18,7 +18,13 @@ export class PostLimiter {
     },
     'get-posts': {
       keyPrefix: 'rl:service:post:get-posts',
-      points: 10,
+      points: 15,
+      duration: 60,
+      blockDuration: 60,
+    },
+    'get-post': {
+      keyPrefix: 'rl:service:post:get-post',
+      points: 20,
       duration: 60,
       blockDuration: 60,
     },
