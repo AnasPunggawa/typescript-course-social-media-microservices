@@ -27,3 +27,7 @@ export type PostsResponse = {
   posts: PostPublic[];
   pagination: PaginationResponse;
 };
+
+export type PostPatch = z.infer<typeof PostSchema.patch>;
+
+export type PostPatchRequest = Omit<PostPatch, 'id' | 'user'>;

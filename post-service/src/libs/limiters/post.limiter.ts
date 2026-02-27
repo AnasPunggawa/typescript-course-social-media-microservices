@@ -28,6 +28,12 @@ export class PostLimiter {
       duration: 60,
       blockDuration: 60,
     },
+    patch: {
+      keyPrefix: 'rl:service:post:patch',
+      points: 5,
+      duration: 60,
+      blockDuration: 60,
+    },
   };
 
   public static initLimiters(): void {

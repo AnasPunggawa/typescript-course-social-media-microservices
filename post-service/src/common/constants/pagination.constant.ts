@@ -1,6 +1,6 @@
 export const SORT_BY = {
-  ASC: 'asc',
-  DESC: 'desc',
+  NEWEST: 'newest',
+  OLDEST: 'oldest',
 } as const;
 
 export const DATA_SIZES = {

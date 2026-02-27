@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 
-import { PostCreateRequest } from '@common/types/post.type';
+import { PostCreateRequest, PostPatchRequest } from '@common/types/post.type';
 import { responseSuccess } from '@libs/responses/success.response';
 import { PostService } from '@services/post.service';
 
@@ -55,6 +55,29 @@ export class PostController {
         res,
         statusCode: 200,
         message: 'Fetch single post',
+        data: { post },
+      });
+    } catch (error: unknown) {
+      next(error);
+    }
+  }
+
+  public static async patchPost(
+    req: Request<{ postId: string }, PostPatchRequest>,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const post = await PostService.patch(
+        req.params.postId,
+        req.get('X-User-Id'),
+        req.body,
+      );
+
+      responseSuccess({
+        res,
+        statusCode: 200,
+        message: 'Updated the post',
         data: { post },
       });
     } catch (error: unknown) {

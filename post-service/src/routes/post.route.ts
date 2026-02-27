@@ -22,3 +22,9 @@ postRouter.get(
   redisRateLimiterMiddleware('get-post'),
   PostController.getPost,
 );
+
+postRouter.patch(
+  '/:postId',
+  redisRateLimiterMiddleware('patch'),
+  PostController.patchPost,
+);

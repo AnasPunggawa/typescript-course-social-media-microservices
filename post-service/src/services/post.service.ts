@@ -3,6 +3,7 @@ import { NotFoundException } from '@common/exceptions/not-found.exception';
 import { PaginationQueryRequest } from '@common/types/pagination.type';
 import type {
   PostCreateRequest,
+  PostPatchRequest,
   PostPublic,
   PostsResponse,
 } from '@common/types/post.type';
@@ -49,6 +50,28 @@ export class PostService {
     const postId = PostSchema.id.parse(id);
 
     const post = await PostRepository.selectPostById(postId);
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    return PostDTO.map(post);
+  }
+
+  public static async patch(
+    postId: string,
+    userId: unknown,
+    patchRequest: PostPatchRequest,
+  ): Promise<PostPublic> {
+    const { id, ...data } = PostSchema.patch.parse({
+      id: postId,
+      user: userId,
+      ...patchRequest,
+    });
+
+    console.log(id, data);
+
+    const post = await PostRepository.patchPostByIdAndUser(id, data);
 
     if (!post) {
       throw new NotFoundException('Post not found');
