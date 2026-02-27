@@ -28,7 +28,11 @@ export class PostSchema {
   public static readonly patch = PostSchema.create
     .partial({
       content: true,
-      mediaUrls: true,
     })
     .extend({ id: PostSchema.id });
+
+  public static readonly delete = PostSchema.patch.pick({
+    id: true,
+    user: true,
+  });
 }

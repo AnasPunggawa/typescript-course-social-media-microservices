@@ -39,4 +39,11 @@ export class PostRepository {
       .select({ __v: 0 })
       .lean();
   }
+
+  public static async deletePostByIdAndUser(
+    id: Types.ObjectId,
+    user: Types.ObjectId,
+  ): Promise<PostStored | null> {
+    return Post.findOneAndDelete({ _id: id, user }).select({ __v: 0 }).lean();
+  }
 }

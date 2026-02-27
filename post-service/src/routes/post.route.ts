@@ -28,3 +28,9 @@ postRouter.patch(
   redisRateLimiterMiddleware('patch'),
   PostController.patchPost,
 );
+
+postRouter.delete(
+  '/:postId',
+  redisRateLimiterMiddleware('delete'),
+  PostController.deletePost,
+);

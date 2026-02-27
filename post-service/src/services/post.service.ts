@@ -79,4 +79,14 @@ export class PostService {
 
     return PostDTO.map(post);
   }
+
+  public static async delete(postId: string, userId: unknown): Promise<void> {
+    const { id, user } = PostSchema.delete.parse({ id: postId, user: userId });
+
+    const post = await PostRepository.deletePostByIdAndUser(id, user);
+
+    if (!post) {
+      throw new NotFoundException('Post Not Found');
+    }
+  }
 }

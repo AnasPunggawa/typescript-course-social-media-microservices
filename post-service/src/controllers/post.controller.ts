@@ -84,4 +84,18 @@ export class PostController {
       next(error);
     }
   }
+
+  public static async deletePost(
+    req: Request<{ postId: string }>,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      await PostService.delete(req.params.postId, req.get('X-User-Id'));
+
+      responseSuccess({ res, statusCode: 200, message: 'Deleted the post' });
+    } catch (error: unknown) {
+      next(error);
+    }
+  }
 }

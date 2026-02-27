@@ -34,6 +34,12 @@ export class PostLimiter {
       duration: 60,
       blockDuration: 60,
     },
+    delete: {
+      keyPrefix: 'rl:service:post:delete',
+      points: 10,
+      duration: 60,
+      blockDuration: 60,
+    },
   };
 
   public static initLimiters(): void {
