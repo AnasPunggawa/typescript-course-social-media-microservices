@@ -32,7 +32,7 @@ export function proxyMiddleware({
           proxyReq.setHeader('X-User-Id', req.user.id);
         }
 
-        const fullTargetURL = target + req.path;
+        const fullTargetURL = target + req.url;
 
         logInfo(
           `${service} Proxy Request ${req.method} ${req.originalUrl} -> ${fullTargetURL}`,
@@ -42,7 +42,7 @@ export function proxyMiddleware({
         fixRequestBody(proxyReq, req);
       },
       proxyRes(proxyRes, req) {
-        const fullTargetURL = target + req.path;
+        const fullTargetURL = target + req.url;
 
         logInfo(
           `${service} Proxy Response ${req.method} ${req.originalUrl} -> ${fullTargetURL} [${proxyRes.statusCode}]`,
