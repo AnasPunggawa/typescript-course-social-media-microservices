@@ -1,10 +1,10 @@
-import { DATA_SIZES, SORT_BY } from '@common/constants/pagination.constant';
+import { DATA_SIZES, SORT } from '@common/constants/pagination.constant';
 import { PostSchema } from '@common/validations/post.schema';
 import z from 'zod';
 
 export type DataSize = (typeof DATA_SIZES)[keyof typeof DATA_SIZES];
 
-export type SortBy = (typeof SORT_BY)[keyof typeof SORT_BY];
+export type Sort = (typeof SORT)[keyof typeof SORT];
 
 export type PaginationQueryRequest = {
   page?: string;

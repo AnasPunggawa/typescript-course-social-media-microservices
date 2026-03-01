@@ -3,6 +3,8 @@ import { NotFoundException } from '@common/exceptions/not-found.exception';
 import { PaginationQueryRequest } from '@common/types/pagination.type';
 import type {
   PostCreateRequest,
+  PostFilter,
+  PostFilterRequest,
   PostPatchRequest,
   PostPublic,
   PostsResponse,
@@ -26,15 +28,23 @@ export class PostService {
   }
 
   public static async getPosts(
-    queryRequest: PaginationQueryRequest,
+    queryRequest: PaginationQueryRequest & PostFilterRequest,
   ): Promise<PostsResponse> {
-    const { page, ...query } = PostSchema.paginationQuery.parse(queryRequest);
+    const { page, user, ...query } =
+      PostSchema.paginationQuery.parse(queryRequest);
+
+    const filter: PostFilter = {};
+
+    if (user) {
+      filter.user = user;
+    }
 
     const skip = (page - 1) * query.size;
 
-    const posts = await PostRepository.selectPosts({ ...query, skip });
-
-    const totalPosts = await PostRepository.countPosts();
+    const [posts, totalPosts] = await Promise.all([
+      PostRepository.selectPosts({ ...query, skip }, filter),
+      PostRepository.countPosts(filter),
+    ]);
 
     return {
       posts: posts.map((post) => PostDTO.map(post)),
@@ -68,8 +78,6 @@ export class PostService {
       user: userId,
       ...patchRequest,
     });
-
-    console.log(id, data);
 
     const post = await PostRepository.patchPostByIdAndUser(id, data);
 

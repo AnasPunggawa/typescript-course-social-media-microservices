@@ -1,4 +1,4 @@
-export const SORT_BY = {
+export const SORT = {
   NEWEST: 'newest',
   OLDEST: 'oldest',
 } as const;

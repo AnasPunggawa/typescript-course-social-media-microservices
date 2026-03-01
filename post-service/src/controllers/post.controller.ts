@@ -11,13 +11,13 @@ export class PostController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const post = await PostService.create(req.get('X-User-Id'), req.body);
+      const data = await PostService.create(req.get('X-User-Id'), req.body);
 
       responseSuccess({
         res,
         statusCode: 200,
         message: 'Post Created',
-        data: { post },
+        data,
       });
     } catch (error: unknown) {
       next(error);
@@ -25,12 +25,20 @@ export class PostController {
   }
 
   public static async getPosts(
-    req: Request,
+    req: Request<{}, {}, {}, { user?: string }>,
     res: Response,
     next: NextFunction,
   ): Promise<void> {
     try {
-      const posts = await PostService.getPosts(req.query);
+      const { user, ...query } = req.query;
+
+      const resolvedUser =
+        user === 'me' ? (req.get('X-User-Id') ?? undefined) : user;
+
+      const posts = await PostService.getPosts({
+        ...query,
+        user: resolvedUser,
+      });
 
       responseSuccess({
         res,

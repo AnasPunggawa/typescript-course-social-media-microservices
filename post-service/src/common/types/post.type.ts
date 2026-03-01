@@ -12,6 +12,13 @@ export type PostStored = PostCreate & {
   updatedAt: Date;
 };
 
+export type PostFilter = Partial<Pick<PostStored, 'user' | 'content'>>;
+
+export type PostFilterRequest = {
+  user?: string | undefined;
+  content?: string | undefined;
+};
+
 export type PostPublic = Omit<PostStored, '_id' | '__v' | 'user'> & {
   id: string;
   user: string;

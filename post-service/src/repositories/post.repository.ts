@@ -1,5 +1,6 @@
 import type {
   PostCreate,
+  PostFilter,
   PostPatch,
   PostStored,
   QueryPosts,
@@ -12,17 +13,20 @@ export class PostRepository {
     return Post.create(data);
   }
 
-  public static async selectPosts(query: QueryPosts): Promise<PostStored[]> {
-    return Post.find({})
+  public static async selectPosts(
+    query: QueryPosts,
+    filter: PostFilter = {},
+  ): Promise<PostStored[]> {
+    return Post.find(filter)
       .select({ __v: 0 })
-      .sort({ createdAt: query.sortBy === 'newest' ? -1 : 1 })
+      .sort({ createdAt: query.sort === 'newest' ? -1 : 1 })
       .limit(query.size)
       .skip(query.skip)
       .lean();
   }
 
-  public static countPosts(): Promise<number> {
-    return Post.countDocuments();
+  public static countPosts(filter: PostFilter = {}): Promise<number> {
+    return Post.countDocuments(filter);
   }
 
   public static selectPostById(id: Types.ObjectId): Promise<PostStored | null> {
@@ -35,7 +39,9 @@ export class PostRepository {
   ): Promise<PostStored | null> {
     const { user, ...patch } = data;
 
-    return Post.findOneAndUpdate({ _id: id, user }, patch, { new: true })
+    return Post.findOneAndUpdate({ _id: id, user }, patch, {
+      returnDocument: 'after',
+    })
       .select({ __v: 0 })
       .lean();
   }
