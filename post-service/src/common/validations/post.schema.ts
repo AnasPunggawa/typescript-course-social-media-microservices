@@ -11,7 +11,7 @@ export class PostSchema {
       })
       .transform((val) => new Types.ObjectId(val)),
     content: z.string().min(1).max(1500),
-    mediaUrls: z.array(z.url()).optional(),
+    mediaIds: z.array(z.string().min(1)).optional(),
   });
 
   public static readonly id = z

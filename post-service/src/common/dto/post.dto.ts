@@ -6,7 +6,7 @@ export class PostDTO {
       id: data._id.toString(),
       user: data.user.toString(),
       content: data.content,
-      mediaUrls: data.mediaUrls,
+      mediaIds: data.mediaIds,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     };

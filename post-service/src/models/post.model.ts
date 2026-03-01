@@ -16,7 +16,7 @@ const PostSchema = new Schema<PostStored>(
       maxLength: 1500,
       required: true,
     },
-    mediaUrls: [Schema.Types.String],
+    mediaIds: [Schema.Types.String],
   },
   {
     timestamps: true,
