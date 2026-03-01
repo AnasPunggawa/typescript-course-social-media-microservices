@@ -14,7 +14,7 @@ import { PostRepository } from '@repositories/post.repository';
 
 export class PostService {
   public static async create(
-    userId: unknown,
+    userId: string,
     createRequest: PostCreateRequest,
   ): Promise<PostPublic> {
     const postCreate = PostSchema.create.parse({
@@ -70,7 +70,7 @@ export class PostService {
 
   public static async patch(
     postId: string,
-    userId: unknown,
+    userId: string,
     patchRequest: PostPatchRequest,
   ): Promise<PostPublic> {
     const { id, ...data } = PostSchema.patch.parse({
@@ -88,7 +88,7 @@ export class PostService {
     return PostDTO.map(post);
   }
 
-  public static async delete(postId: string, userId: unknown): Promise<void> {
+  public static async delete(postId: string, userId: string): Promise<void> {
     const { id, user } = PostSchema.delete.parse({ id: postId, user: userId });
 
     const post = await PostRepository.deletePostByIdAndUser(id, user);

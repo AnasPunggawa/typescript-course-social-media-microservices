@@ -11,7 +11,7 @@ export class PostController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const data = await PostService.create(req.get('X-User-Id'), req.body);
+      const data = await PostService.create(req.user.id, req.body);
 
       responseSuccess({
         res,
@@ -32,8 +32,7 @@ export class PostController {
     try {
       const { user, ...query } = req.query;
 
-      const resolvedUser =
-        user === 'me' ? (req.get('X-User-Id') ?? undefined) : user;
+      const resolvedUser = user === 'me' ? req.user.id : user;
 
       const posts = await PostService.getPosts({
         ...query,
@@ -78,7 +77,7 @@ export class PostController {
     try {
       const post = await PostService.patch(
         req.params.postId,
-        req.get('X-User-Id'),
+        req.user.id,
         req.body,
       );
 
@@ -99,7 +98,7 @@ export class PostController {
     next: NextFunction,
   ) {
     try {
-      await PostService.delete(req.params.postId, req.get('X-User-Id'));
+      await PostService.delete(req.params.postId, req.user.id);
 
       responseSuccess({ res, statusCode: 200, message: 'Deleted the post' });
     } catch (error: unknown) {
