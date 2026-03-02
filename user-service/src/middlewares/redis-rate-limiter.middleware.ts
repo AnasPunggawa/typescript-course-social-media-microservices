@@ -6,6 +6,14 @@ import { Limiter } from '@common/types/rate-limit.type';
 import { UserLimiter } from '@libs/limiters/user.limiter';
 
 export function userRateLimiterMiddleware(name: Limiter) {
+  function generateUnique(req: Request, name: Limiter): string {
+    if (name === 'login') return req.body.username ?? req.ip ?? 'anonymous';
+
+    if (name === 'refresh' || name === 'logout') return req.ip ?? 'anonymous';
+
+    return req.signedCookies['refreshToken'] ?? req.ip ?? 'anonymous';
+  }
+
   return async function (
     req: Request,
     res: Response,
@@ -14,10 +22,7 @@ export function userRateLimiterMiddleware(name: Limiter) {
     const limiter = UserLimiter.getLimiter(name);
 
     try {
-      const unique =
-        name === 'login'
-          ? (req.body.username ?? req.ip ?? 'anonymous')
-          : (req.signedCookies['refreshToken'] ?? req.ip ?? 'anonymous');
+      const unique = generateUnique(req, name);
 
       const key = await limiter.consume(unique);
 
