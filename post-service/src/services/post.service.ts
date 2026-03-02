@@ -10,6 +10,8 @@ import type {
   PostsResponse,
 } from '@common/types/post.type';
 import { PostSchema } from '@common/validations/post.schema';
+import { RedisPostCache } from '@libs/caches/redis-post.cache';
+import { getRedis } from '@libs/db/redis.db';
 import { PostRepository } from '@repositories/post.repository';
 
 export class PostService {
@@ -24,7 +26,21 @@ export class PostService {
 
     const post = await PostRepository.store(postCreate);
 
-    return PostDTO.map(post);
+    const mappedPost = PostDTO.map(post);
+
+    const redisClient = getRedis();
+
+    await Promise.all([
+      redisClient.incr(RedisPostCache.REDIS_KEY_VERSION),
+      redisClient.set(
+        RedisPostCache.buildItemKey(post._id.toString()),
+        JSON.stringify(mappedPost),
+        'EX',
+        60 * 10, // TTL 10 minutes
+      ),
+    ]);
+
+    return mappedPost;
   }
 
   public static async getPosts(
@@ -32,6 +48,23 @@ export class PostService {
   ): Promise<PostsResponse> {
     const { page, user, ...query } =
       PostSchema.paginationQuery.parse(queryRequest);
+
+    const redisClient = getRedis();
+
+    const version = await RedisPostCache.getListVersion();
+
+    const cachedKey = RedisPostCache.buildListKey({
+      page,
+      user,
+      version,
+      ...query,
+    });
+
+    const cachedValue = await redisClient.get(cachedKey);
+
+    if (cachedValue) {
+      return JSON.parse(cachedValue) as PostsResponse;
+    }
 
     const filter: PostFilter = {};
 
@@ -46,7 +79,7 @@ export class PostService {
       PostRepository.countPosts(filter),
     ]);
 
-    return {
+    const mappedPosts = {
       posts: posts.map((post) => PostDTO.map(post)),
       pagination: {
         ...query,
@@ -54,10 +87,29 @@ export class PostService {
         totalPage: Math.ceil(totalPosts / query.size),
       },
     };
+
+    await redisClient.set(
+      cachedKey,
+      JSON.stringify(mappedPosts),
+      'EX',
+      60 * 15,
+    ); // TTL 15 minutes
+
+    return mappedPosts;
   }
 
   public static async getPost(id: string): Promise<PostPublic> {
     const postId = PostSchema.id.parse(id);
+
+    const redisClient = getRedis();
+
+    const cachedKey = RedisPostCache.buildItemKey(postId.toString());
+
+    const cachedValue = await redisClient.get(cachedKey);
+
+    if (cachedValue) {
+      return JSON.parse(cachedValue) as PostPublic;
+    }
 
     const post = await PostRepository.selectPostById(postId);
 
@@ -65,7 +117,11 @@ export class PostService {
       throw new NotFoundException('Post not found');
     }
 
-    return PostDTO.map(post);
+    const mappedPost = PostDTO.map(post);
+
+    await redisClient.set(cachedKey, JSON.stringify(mappedPost), 'EX', 60 * 10); // TTL 10 minutes
+
+    return mappedPost;
   }
 
   public static async patch(
@@ -85,7 +141,21 @@ export class PostService {
       throw new NotFoundException('Post not found');
     }
 
-    return PostDTO.map(post);
+    const mappedPost = PostDTO.map(post);
+
+    const redisClient = getRedis();
+
+    await Promise.all([
+      redisClient.incr(RedisPostCache.REDIS_KEY_VERSION),
+      redisClient.set(
+        RedisPostCache.buildItemKey(id.toString()),
+        JSON.stringify(mappedPost),
+        'EX',
+        60 * 10, // TTL 10 minutes
+      ),
+    ]);
+
+    return mappedPost;
   }
 
   public static async delete(postId: string, userId: string): Promise<void> {
@@ -96,5 +166,12 @@ export class PostService {
     if (!post) {
       throw new NotFoundException('Post Not Found');
     }
+
+    const redisClient = getRedis();
+
+    await Promise.all([
+      redisClient.incr(RedisPostCache.REDIS_KEY_VERSION),
+      redisClient.del(RedisPostCache.buildItemKey(id.toString())),
+    ]);
   }
 }

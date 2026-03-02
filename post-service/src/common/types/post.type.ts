@@ -38,3 +38,5 @@ export type PostsResponse = {
 export type PostPatch = z.infer<typeof PostSchema.patch>;
 
 export type PostPatchRequest = Omit<PostPatch, 'id' | 'user'>;
+
+export type PostPaginationQuery = z.infer<typeof PostSchema.paginationQuery>;

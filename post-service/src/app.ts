@@ -3,10 +3,10 @@ import helmet from 'helmet';
 
 import { apiRateLimit } from '@configs/rate-limit.config';
 import { globalErrorMiddleware } from '@middlewares/global-error.middleware';
+import { internalAuthMiddleware } from '@middlewares/internal-auth.middleware';
 import { logMiddleware } from '@middlewares/log.middleware';
 import { notFoundURLMiddleware } from '@middlewares/not-found-url.middleware';
 import { postRouter } from '@routes/post.route';
-import { internalAuthMiddleware } from './middlewares/internal-auth.middleware';
 
 export function createApp(): Express {
   const app = express();

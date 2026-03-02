@@ -20,8 +20,8 @@ export class PostRepository {
     return Post.find(filter)
       .select({ __v: 0 })
       .sort({ createdAt: query.sort === 'newest' ? -1 : 1 })
-      .limit(query.size)
       .skip(query.skip)
+      .limit(query.size)
       .lean();
   }
 
