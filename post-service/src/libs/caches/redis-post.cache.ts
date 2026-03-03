@@ -4,7 +4,7 @@ import { getRedis } from '@libs/db/redis.db';
 export class RedisPostCache {
   private static readonly PREFIX_ITEM_KEY = 'cache:post:item';
   private static readonly PREFIX_LIST_KEY = 'cache:post';
-  public static readonly REDIS_KEY_VERSION = 'cache:post:version';
+  private static readonly REDIS_KEY_VERSION = 'cache:post:version';
 
   public static buildItemKey(id: string): string {
     return `${RedisPostCache.PREFIX_ITEM_KEY}:${id}`;
@@ -34,5 +34,9 @@ export class RedisPostCache {
     }
 
     return version;
+  }
+
+  public static async incrListVersion(): Promise<void> {
+    await getRedis().incr(RedisPostCache.REDIS_KEY_VERSION);
   }
 }

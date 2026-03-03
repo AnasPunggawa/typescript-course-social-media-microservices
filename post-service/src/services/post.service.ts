@@ -31,7 +31,7 @@ export class PostService {
     const redisClient = getRedis();
 
     await Promise.all([
-      redisClient.incr(RedisPostCache.REDIS_KEY_VERSION),
+      RedisPostCache.incrListVersion(),
       redisClient.set(
         RedisPostCache.buildItemKey(post._id.toString()),
         JSON.stringify(mappedPost),
@@ -146,7 +146,7 @@ export class PostService {
     const redisClient = getRedis();
 
     await Promise.all([
-      redisClient.incr(RedisPostCache.REDIS_KEY_VERSION),
+      RedisPostCache.incrListVersion(),
       redisClient.set(
         RedisPostCache.buildItemKey(id.toString()),
         JSON.stringify(mappedPost),
@@ -170,7 +170,7 @@ export class PostService {
     const redisClient = getRedis();
 
     await Promise.all([
-      redisClient.incr(RedisPostCache.REDIS_KEY_VERSION),
+      RedisPostCache.incrListVersion(),
       redisClient.del(RedisPostCache.buildItemKey(id.toString())),
     ]);
   }
