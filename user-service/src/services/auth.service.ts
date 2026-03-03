@@ -13,6 +13,8 @@ import type {
 } from '@common/types/user.type';
 import { UserSchema } from '@common/validations/user.schema';
 import { Argon2PasswordManager, JWTManager } from '@infrastructures/security';
+import { RedisUserCache } from '@libs/cache/redis-user.cache';
+import { getRedis } from '@libs/db/redis.db';
 import { RefreshTokenRepository } from '@repositories/refresh-token.repository';
 import { UserRepository } from '@repositories/user.repository';
 
@@ -36,8 +38,22 @@ export class AuthService {
 
     await AuthService.storeToken(refreshToken, user._id);
 
+    const mappedUser = UserDTO.map(user);
+
+    const redisClient = getRedis();
+
+    await Promise.all([
+      RedisUserCache.incrListVersion(),
+      redisClient.set(
+        RedisUserCache.buildUserKey(mappedUser.id),
+        JSON.stringify(mappedUser),
+        'EX',
+        60 * 10, // TTL 10 minutes
+      ),
+    ]);
+
     return {
-      user: UserDTO.map(user),
+      user: mappedUser,
       tokens: {
         accessToken,
         refreshToken,
