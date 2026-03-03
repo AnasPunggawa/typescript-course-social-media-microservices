@@ -8,59 +8,61 @@ import { logError } from '@libs/logger/error.logger';
 import { responseFail } from '@libs/responses/fail.response';
 
 export function errorGlobalMiddleware(
-  err: unknown,
+  error: unknown,
   _req: Request,
   res: Response,
   next: NextFunction,
 ): void {
-  if (!err || res.headersSent) {
+  if (!error || res.headersSent) {
     return next();
   }
 
-  if (err instanceof ZodError) {
+  logError(`Global Error Middleware`, error, 'MIDDLEWARE');
+
+  if (error instanceof ZodError) {
     responseFail({
       res,
       statusCode: 400,
       message: 'Validation failed',
-      errors: err.issues,
+      errors: error.issues,
     });
 
     return;
   }
 
-  if (err instanceof ClientException) {
+  if (error instanceof ClientException) {
     responseFail({
       res,
-      statusCode: err.statusCode,
-      message: err.message,
+      statusCode: error.statusCode,
+      message: error.message,
     });
 
     return;
   }
 
-  if (MongooseTypeError.isValidationError(err)) {
-    responseFail<typeof err.errors>({
+  if (MongooseTypeError.isValidationError(error)) {
+    responseFail<typeof error.errors>({
       res,
       statusCode: 400,
       message: 'Validation failed',
-      errors: err.errors,
+      errors: error.errors,
     });
 
     return;
   }
 
-  if (MongooseTypeError.isCastError(err)) {
+  if (MongooseTypeError.isCastError(error)) {
     responseFail({
       res,
       statusCode: 400,
-      message: err.message,
+      message: error.message,
     });
 
     return;
   }
 
-  if (MongooseTypeError.isDuplicateError(err)) {
-    const errKeys = Object.keys(err['keyValue']);
+  if (MongooseTypeError.isDuplicateError(error)) {
+    const errKeys = Object.keys(error['keyValue']);
 
     responseFail({
       res,
@@ -71,26 +73,25 @@ export function errorGlobalMiddleware(
     return;
   }
 
-  if (MongooseTypeError.isError(err) || MongooseTypeError.isServerError(err)) {
+  if (
+    MongooseTypeError.isError(error) ||
+    MongooseTypeError.isServerError(error)
+  ) {
     responseFail({
       res,
       statusCode: 500,
       message: 'INTERNAL SERVER ERROR',
     });
 
-    logError('Global Error Middleware', err, 'MIDDLEWARE_MONGODB_ERROR');
-
     return;
   }
 
-  if (err instanceof JsonWebTokenError) {
+  if (error instanceof JsonWebTokenError) {
     responseFail({
       res,
       statusCode: 401,
-      message: err.message,
+      message: error.message,
     });
-
-    logError('Global Error Middleware', err, 'MIDDLEWARE_JWT_ERROR');
 
     return;
   }
@@ -100,6 +101,4 @@ export function errorGlobalMiddleware(
     statusCode: 500,
     message: 'INTERNAL SERVER ERROR',
   });
-
-  logError('Global Error Middleware', err, 'MIDDLEWARE');
 }
