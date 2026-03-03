@@ -6,6 +6,7 @@ import { cors } from '@configs/cors.config';
 import { loadEnv } from '@configs/env.config';
 import { apiRateLimit } from '@configs/rate-limit.config';
 import { errorGlobalMiddleware } from '@middlewares/global-error.middleware';
+import { internalAuthMiddleware } from '@middlewares/internal-auth.middleware';
 import { loggerMiddleware } from '@middlewares/logger.middleware';
 import { notFoundURLMiddleware } from '@middlewares/not-found-url.middleware';
 import { authRouter } from '@routes/auth.route';
@@ -25,9 +26,9 @@ export function createApp(): Express {
 
   app.use(loggerMiddleware);
 
-  app.use('/api/users', userRouter);
-
   app.use('/api/auth', authRouter);
+
+  app.use('/api/users', internalAuthMiddleware, userRouter);
 
   app.use(notFoundURLMiddleware);
 

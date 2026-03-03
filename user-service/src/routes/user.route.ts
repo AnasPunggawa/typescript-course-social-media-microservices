@@ -10,7 +10,7 @@ export const userRouter = Router({
 userRouter.get('/', userRateLimiterMiddleware('auth'), UserController.getUsers);
 
 userRouter.get(
-  '/current',
+  '/me',
   userRateLimiterMiddleware('auth'),
   UserController.getCurrent,
 );
