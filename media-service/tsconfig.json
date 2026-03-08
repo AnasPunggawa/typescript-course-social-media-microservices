@@ -20,7 +20,8 @@
     "typeRoots": ["./node_modules/@types"],
     "paths": {
       "@common/*": ["common/*"],
-      "@configs/*": ["configs/*"]
+      "@configs/*": ["configs/*"],
+      "@libs/*": ["libs/*"]
     },
 
     // Other Outputs

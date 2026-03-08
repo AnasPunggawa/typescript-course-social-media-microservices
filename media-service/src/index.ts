@@ -1,21 +1,29 @@
 import 'dotenv/config';
-import { Server } from 'node:http';
+import type { Server } from 'node:http';
 import process from 'node:process';
 
 import { loadEnv } from '@configs/env.config';
+import { setupRuntimeDirectories } from '@configs/runtime.config';
+import { logError } from '@libs/logger/error.logger';
+import { logInfo } from '@libs/logger/info.logger';
+import { initLogger } from '@libs/logger/logger';
 import { startServer } from './server';
 
 let isShuttingDown: boolean = false;
 let server: Server | undefined;
 
 async function bootstrap(): Promise<void> {
-  const { SERVER_HOST, SERVER_PORT } = loadEnv();
+  const { NODE_ENV, SERVER_HOST, SERVER_PORT } = loadEnv();
+
+  await setupRuntimeDirectories();
+
+  initLogger(NODE_ENV);
 
   server = startServer(SERVER_PORT, SERVER_HOST);
 }
 
 bootstrap().catch((error: unknown) => {
-  console.error('Media Service Error', error);
+  logError('Media Service Error', error, 'BOOTSTRAP');
 
   process.exit(1);
 });
@@ -25,7 +33,7 @@ async function shutdown(signal: string): Promise<void> {
 
   isShuttingDown = true;
 
-  console.info(`Receive ${signal}`);
+  logInfo(`Receive ${signal}`, 'SERVER_SHUTDOWN');
 
   if (!server) {
     process.exitCode = 0;
@@ -45,7 +53,7 @@ async function shutdown(signal: string): Promise<void> {
             return reject(error);
           }
 
-          console.info('HTTP server closed');
+          logInfo('HTTP server closed', 'SERVER_SHUTDOWN');
 
           resolve();
         });
@@ -56,7 +64,7 @@ async function shutdown(signal: string): Promise<void> {
 
     clearTimeout(forceExitTimer);
   } catch (error: unknown) {
-    console.error('Shutdown failed', error);
+    logError('Shutdown failed', error, 'SERVER_SHUTDOWN');
 
     process.exitCode = 1;
   }
@@ -67,7 +75,7 @@ process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 
 process.on('unhandledRejection', (error: unknown) => {
-  console.error('unhandledRejection\n', error);
+  logError('unhandledRejection', error, 'SERVER');
 
   shutdown('unhandledRejection').finally(() => {
     process.exit(1);
@@ -75,7 +83,7 @@ process.on('unhandledRejection', (error: unknown) => {
 });
 
 process.on('uncaughtException', (error: unknown) => {
-  console.error('uncaughtException\n', error);
+  logError('uncaughtException', error, 'SERVER');
 
   shutdown('uncaughtException').finally(() => {
     process.exit(1);

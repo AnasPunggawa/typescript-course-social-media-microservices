@@ -1,4 +1,4 @@
-import express, { Express, json, urlencoded } from 'express';
+import express, { type Express, json, urlencoded } from 'express';
 import helmet from 'helmet';
 
 export function createApp(): Express {

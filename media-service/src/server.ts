@@ -1,5 +1,7 @@
-import { createServer, Server } from 'node:http';
+import { createServer, type Server } from 'node:http';
 
+import { logError } from '@libs/logger/error.logger';
+import { logInfo } from '@libs/logger/info.logger';
 import { createApp } from './app';
 
 export function startServer(PORT: number, HOST: string): Server {
@@ -8,13 +10,13 @@ export function startServer(PORT: number, HOST: string): Server {
   const server = createServer(app);
 
   server.on('error', (error: Error) => {
-    console.error('Server Error', error);
+    logError('Server Error', error, 'SERVER');
 
     throw error;
   });
 
   server.listen(PORT, HOST, () => {
-    console.info(`Service is running on http://${HOST}:${PORT}`);
+    logInfo(`Service is running on http://${HOST}:${PORT}`, 'SERVER');
   });
 
   return server;
