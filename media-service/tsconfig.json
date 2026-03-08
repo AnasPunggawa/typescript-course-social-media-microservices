@@ -21,7 +21,8 @@
     "paths": {
       "@common/*": ["common/*"],
       "@configs/*": ["configs/*"],
-      "@libs/*": ["libs/*"]
+      "@libs/*": ["libs/*"],
+      "@middlewares/*": ["middlewares/*"]
     },
 
     // Other Outputs
