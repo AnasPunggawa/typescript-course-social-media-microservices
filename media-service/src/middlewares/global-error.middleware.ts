@@ -1,7 +1,8 @@
+import type { NextFunction, Request, Response } from 'express';
+
 import { ClientException } from '@common/exceptions/client.exception';
 import { logError } from '@libs/logger/error.logger';
 import { responseFail } from '@libs/responses/fail.response';
-import type { NextFunction, Request, Response } from 'express';
 
 export function globalErrorMiddleware(
   error: unknown,
