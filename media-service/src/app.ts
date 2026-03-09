@@ -17,8 +17,8 @@ export function createApp(): Express {
 
   app.use(logMiddleware);
 
-  app.get('/', (_req, res) => {
-    responseSuccess({ res, statusCode: 200, message: 'Media Service OK' });
+  app.get('/api/medias', (_req, res) => {
+    responseSuccess({ res, statusCode: 200, message: 'Medias Service OK' });
   });
 
   app.use(notFoundURLMiddleware);

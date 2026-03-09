@@ -14,6 +14,7 @@ export function createApp(): Express {
   const {
     ALLOWED_ORIGINS,
     AUTH_SERVICE_URL,
+    MEDIA_SERVICE_URL,
     NODE_ENV,
     POST_SERVICE_URL,
     USER_SERVICE_URL,
@@ -60,6 +61,18 @@ export function createApp(): Express {
       service: 'POST_SERVICE',
       pathRewrite: {
         '/api/v1/posts': '/api/posts',
+      },
+    }),
+  );
+
+  app.use(
+    '/api/v1/medias',
+    authenticationMiddleware,
+    proxyMiddleware({
+      target: MEDIA_SERVICE_URL,
+      service: 'MEDIA_SERVICE',
+      pathRewrite: {
+        '/api/v1/medias': '/api/medias',
       },
     }),
   );

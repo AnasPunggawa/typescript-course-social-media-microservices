@@ -7,7 +7,12 @@ import { createApp } from './app';
 
 export function startServer(PORT: number, HOST: string): Server {
   const app = createApp();
-  const { AUTH_SERVICE_URL, POST_SERVICE_URL, USER_SERVICE_URL } = loadEnv();
+  const {
+    AUTH_SERVICE_URL,
+    MEDIA_SERVICE_URL,
+    POST_SERVICE_URL,
+    USER_SERVICE_URL,
+  } = loadEnv();
 
   const server = createServer(app);
 
@@ -22,6 +27,7 @@ export function startServer(PORT: number, HOST: string): Server {
     logInfo(`Auth Service is running on ${AUTH_SERVICE_URL}`, 'SERVICE');
     logInfo(`User Service is running on ${USER_SERVICE_URL}`, 'SERVICE');
     logInfo(`Post Service is running on ${POST_SERVICE_URL}`, 'SERVICE');
+    logInfo(`Media Service is running on ${MEDIA_SERVICE_URL}`, 'SERVICE');
   });
 
   return server;
