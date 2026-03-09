@@ -1,6 +1,6 @@
 import { type Server, createServer } from 'node:http';
 
-import { logError } from '@libs/logger/error.log';
+import { logError } from '@libs/logger/error.logger';
 import { logInfo } from '@libs/logger/info.logger';
 import { createApp } from './app';
 

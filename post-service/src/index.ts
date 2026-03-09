@@ -7,7 +7,7 @@ import process from 'node:process';
 import { loadEnv } from '@configs/env.config';
 import { setupRuntimeDirectories } from '@configs/runtime.config';
 import { connection } from '@libs/db/connection.db';
-import { logError } from '@libs/logger/error.log';
+import { logError } from '@libs/logger/error.logger';
 import { logInfo } from '@libs/logger/info.logger';
 import { initLogger } from '@libs/logger/logger';
 import { startServer } from './server';

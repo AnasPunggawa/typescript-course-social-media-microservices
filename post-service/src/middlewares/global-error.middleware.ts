@@ -3,7 +3,7 @@ import { ZodError } from 'zod';
 
 import { ClientException } from '@common/exceptions/client.exception';
 import { MongooseTypeError } from '@common/utils/mongoose-type-error.util';
-import { logError } from '@libs/logger/error.log';
+import { logError } from '@libs/logger/error.logger';
 import { responseFail } from '@libs/responses/fail.response';
 
 export function globalErrorMiddleware(

@@ -1,4 +1,4 @@
-import { logError } from '@libs/logger/error.log';
+import { logError } from '@libs/logger/error.logger';
 import { logInfo } from '@libs/logger/info.logger';
 import { connect, type Mongoose } from 'mongoose';
 
