@@ -15,7 +15,7 @@ export function logError(
     }
   } catch (err: unknown) {
     console.error(
-      `[${new Date().toISOString()}] [USER_SERVICE] [${label}] [SAFE_LOG] [ERROR]: ${message}\n`,
+      `[${new Date().toISOString()}] [MEDIA_SERVICE] [${label}] [SAFE_LOG] [ERROR]: ${message}\n`,
       error,
     );
   }

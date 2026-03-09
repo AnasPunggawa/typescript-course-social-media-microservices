@@ -1,15 +1,18 @@
 import 'dotenv/config';
+import type Redis from 'ioredis';
 import type { Server } from 'node:http';
 import process from 'node:process';
 
 import { loadEnv } from '@configs/env.config';
 import { setupRuntimeDirectories } from '@configs/runtime.config';
+import { connection } from '@libs/db/connection.db';
 import { logError } from '@libs/logger/error.logger';
 import { logInfo } from '@libs/logger/info.logger';
 import { initLogger } from '@libs/logger/logger';
 import { startServer } from './server';
 
 let isShuttingDown: boolean = false;
+let redisConnection: Redis | undefined;
 let server: Server | undefined;
 
 async function bootstrap(): Promise<void> {
@@ -18,6 +21,10 @@ async function bootstrap(): Promise<void> {
   await setupRuntimeDirectories();
 
   initLogger(NODE_ENV);
+
+  const connections = await connection();
+
+  redisConnection = connections.redisConnection;
 
   server = startServer(SERVER_PORT, SERVER_HOST);
 }
@@ -35,7 +42,7 @@ async function shutdown(signal: string): Promise<void> {
 
   logInfo(`Receive ${signal}`, 'SERVER_SHUTDOWN');
 
-  if (!server) {
+  if (!server && !redisConnection) {
     process.exitCode = 0;
 
     return;
@@ -58,6 +65,12 @@ async function shutdown(signal: string): Promise<void> {
           resolve();
         });
       });
+    }
+
+    if (redisConnection) {
+      logInfo('Redis closed', 'SERVER_SHUTDOWN');
+
+      await redisConnection.quit();
     }
 
     process.exitCode = 0;

@@ -5,7 +5,7 @@ export function logInfo(message: string, label: string = 'HTTP'): void {
     getLogger().info(message, { label });
   } catch (error: unknown) {
     console.log(
-      `[${new Date().toISOString()}] [POST_SERVICE] [${label}] [SAFE_LOG] [INFO]: ${message}`,
+      `[${new Date().toISOString()}] [MEDIA_SERVICE] [${label}] [SAFE_LOG] [INFO]: ${message}`,
     );
   }
 }
